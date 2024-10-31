@@ -1,9 +1,3 @@
-/**
- * HeaderContent
- * ! Profile DropDown
- * ! DropDown Menu
- */
-
 import { LogoutOutlined, ToolOutlined, UserOutlined } from "@ant-design/icons";
 import { Avatar, Dropdown } from "antd";
 import { Header } from "antd/es/layout/layout";
@@ -26,8 +20,8 @@ export default function HeaderContent() {
           B.E
         </Avatar>
         <div className="profileDropdownInfo">
-          <p>name BE</p>
-          <p>email BE</p>
+          <p>PRASHANTH GOUD</p>
+          <p>COFFEWITHCORPORATES@GMAIL.COM</p>
         </div>
       </div>
     );
@@ -100,6 +94,7 @@ export default function HeaderContent() {
         </Avatar>
       </Dropdown>
       <UpgradeButton style={{ color: "red" }} />
+      
     </Header>
   );
 }

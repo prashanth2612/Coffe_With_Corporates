@@ -1,11 +1,18 @@
-import fields from "./config"
-import DynamicForm from './../../forms/DynamicForm/index';
-import CrudModule from './../../modules/CrudModule/index';
+/* eslint-disable no-unused-vars */
+import { fields } from './config';
+import CrudModule from '@/modules/CrudModule';
+import DynamicForm from '@/forms/DynamicForm';
+import DataTable from './../../components/DataTable/index';
+
+
+
 
 
 export default function Customer(){
 
+
   const entity = 'client';
+  
   const searchConfig = {
     displayLabels:['name'],
     searchFields:'name',
@@ -13,32 +20,42 @@ export default function Customer(){
 
   const deleteModalLabels = ['name'];
 
-  const labels = {
-
-    PANEL_TITLE : 'client',
+  const Labels={
+    PANEL_TITLE:'client',
     DATATABLE_TITLE:'client_list',
     ADD_NEW_ENTITY:'add_new_client',
     ENTITY_NAME:'client',
-  
-  }
+  };
 
   const configPage = {
     entity,
-    ...labels,
-  };
+    ...Labels,
+  }
 
   const config = {
     ...configPage,
     fields,
     searchConfig,
     deleteModalLabels,
-  };
+  }
 
-  return(
-    <CrudModule 
-    createForm={<DynamicForm/>}
-    updateForm={<DynamicForm/>}
-    config={config}
-    />
+
+
+
+
+
+
+  return (
+   <>
+
+<CrudModule 
+   CreateForm={<DynamicForm/>}
+  UpdateForm={<DynamicForm/>}
+  config={config}
+   />
+
+   <DataTable/>
+   </>
+   
   )
 }

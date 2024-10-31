@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Typography } from 'antd';
 import { TeamOutlined } from '@ant-design/icons';
+import DataTable from '@/components/DataTable';
 
 const { Title, Paragraph } = Typography;
 
@@ -41,6 +42,7 @@ const People = () => {
       <Button type="primary" style={styles.button} onClick={() => alert("Manage People!")}>
         Manage People
       </Button>
+      <DataTable/>
     </div>
   );
 };

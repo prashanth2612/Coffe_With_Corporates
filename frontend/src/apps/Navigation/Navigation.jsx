@@ -116,6 +116,15 @@ export default function Navigation() {
       width={256}
       theme="light"
     >
+
+      <div
+      className="logo"
+      
+      style={{
+        cursor: 'pointer',
+      }}>
+        <img src='https://th.bing.com/th/id/OIP.mAYHtlNdxBrYqO7qDTvJFgHaEZ?w=768&h=456&rs=1&pid=ImgDetMain' alt="Logo" style={{ marginLeft: '-5px', height: '170%', width:'100%'} }/>
+      </div>
       <Menu
         theme="light"
         mode="inline"

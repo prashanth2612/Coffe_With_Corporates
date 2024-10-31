@@ -1,21 +1,25 @@
 import React from 'react';
 import { Button, Typography } from 'antd';
 import { CustomerServiceOutlined } from '@ant-design/icons';
+import DataTable from '@/components/DataTable';
 
 const { Title, Paragraph } = Typography;
 
 const Index = () => {
   return (
-    <div style={styles.container}>
-      <CustomerServiceOutlined style={styles.icon} />
-      <Title level={2} style={styles.title}>Welcome to the Company Page!</Title>
-      <Paragraph style={styles.paragraph}>
-        Here you can manage customer information, track interactions, and provide support.
-      </Paragraph>
-      <Button type="primary" style={styles.button} onClick={() => alert("Button Clicked!")}>
-        Get Started
-      </Button>
-    </div>
+     <div> 
+      <DataTable title={"COMPANY PAGE"}/>
+     <div style={styles.container}>
+       <CustomerServiceOutlined style={styles.icon} />
+       <Title level={2} style={styles.title}>Welcome to the Company Page!</Title>
+       <Paragraph style={styles.paragraph}>
+         Here you can manage customer information, track interactions, and provide support.
+       </Paragraph>
+       <Button type="primary" style={styles.button} onClick={() => alert("Button Clicked!")}>
+         Get Started
+       </Button>
+ 
+     </div></div>
   );
 };
 

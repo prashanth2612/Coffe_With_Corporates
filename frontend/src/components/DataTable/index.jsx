@@ -15,7 +15,7 @@ function AddNewItem({name}){
   )
 }
 
-export default function DataTable() {
+export default function DataTable({title}) {
 
 
 
@@ -38,7 +38,7 @@ export default function DataTable() {
   return(
     <>
       <PageHeader backIcon = {<ArrowRightOutlined/>}
-      title="DataTable title"
+      title={title}
       ghost={false}
 
       extra={[
