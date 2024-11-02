@@ -1,5 +1,4 @@
 import { Button, Result } from 'antd';
-
 import useLanguage from '@/locale/useLanguage';
 
 const About = () => {
@@ -7,26 +6,20 @@ const About = () => {
   return (
     <Result
       status="info"
-      title={'IDURAR'}
-      subTitle={translate('Do you need help on customize of this app')}
+      title="Coffe With Corporats"
+      subTitle={translate('Looking for help or interested in collaboration?')}
       extra={
         <>
           <p>
-            Website : <a href="https://www.idurarapp.com">www.idurarapp.com</a>{' '}
-          </p>
-          <p>
-            GitHub :{' '}
-            <a href="https://github.com/idurar/idurar-erp-crm">
-              https://github.com/idurar/idurar-erp-crm
-            </a>
+            GitHub Profile: <a href="https://github.com/prashanth2612!" target="_blank" rel="noopener noreferrer">https://github.com/prashanth2612!</a>
           </p>
           <Button
             type="primary"
             onClick={() => {
-              window.open(`https://www.idurarapp.com/contact-us/`);
+              window.open(`https://github.com/prashanth2612!`);
             }}
           >
-            {translate('Contact us')}
+            {translate('Visit GitHub Profile')}
           </Button>
         </>
       }
