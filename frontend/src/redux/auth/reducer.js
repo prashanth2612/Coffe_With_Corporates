@@ -2,7 +2,7 @@ import * as actionTypes from './types';
 
 const INITIAL_STATE = {
   current: {},
-  isLoggedIn: true,
+  isLoggedIn: false,
   isLoading: false,
   isSuccess: false,
 };
@@ -12,7 +12,7 @@ const authReducer = (state = INITIAL_STATE, action) => {
     case actionTypes.REQUEST_LOADING:
       return {
         ...state,
-        isLoggedIn: true,
+        isLoggedIn: false,
         isLoading: true,
       };
     case actionTypes.REQUEST_FAILED:
@@ -29,7 +29,7 @@ const authReducer = (state = INITIAL_STATE, action) => {
     case actionTypes.REGISTER_SUCCESS:
       return {
         current: null,
-        isLoggedIn: true,
+        isLoggedIn: false,
         isLoading: false,
         isSuccess: true,
       };

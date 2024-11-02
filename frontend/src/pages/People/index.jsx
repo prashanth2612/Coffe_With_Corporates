@@ -1,50 +1,39 @@
-import React from 'react';
-import { Button, Typography } from 'antd';
-import { TeamOutlined } from '@ant-design/icons';
-import DataTable from '@/components/DataTable';
+import CrudModule from '@/modules/CrudModule/CrudModule';
+import DynamicForm from '@/forms/DynamicForm';
+import { fields } from './config';
 
-const { Title, Paragraph } = Typography;
+import useLanguage from '@/locale/useLanguage';
 
-const People = () => {
-  const styles = {
-    container: {
-      padding: '20px',
-      borderRadius: '5px',
-      boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-      backgroundColor: '#ffffff',
-      maxWidth: '600px',
-      margin: '20px auto',
-    },
-    icon: {
-      fontSize: '50px',
-      color: '#1890ff',
-      marginBottom: '10px',
-    },
-    title: {
-      marginBottom: '10px',
-    },
-    paragraph: {
-      marginBottom: '20px',
-    },
-    button: {
-      display: 'block',
-      width: '100%',
-    },
+export default function People() {
+  const translate = useLanguage();
+  const entity = 'people';
+  const searchConfig = {
+    displayLabels: ['firstname', 'lastname'],
+    searchFields: 'firstname,lastname,email',
   };
+  const deleteModalLabels = ['firstname', 'lastname'];
 
+  const Labels = {
+    PANEL_TITLE: translate('person'),
+    DATATABLE_TITLE: translate('people_list'),
+    ADD_NEW_ENTITY: translate('add_new_person'),
+    ENTITY_NAME: translate('person'),
+  };
+  const configPage = {
+    entity,
+    ...Labels,
+  };
+  const config = {
+    ...configPage,
+    fields,
+    searchConfig,
+    deleteModalLabels,
+  };
   return (
-    <div style={styles.container}>
-      <TeamOutlined style={styles.icon} />
-      <Title level={2} style={styles.title}>People</Title>
-      <Paragraph style={styles.paragraph}>
-        Manage your team and their roles.
-      </Paragraph>
-      <Button type="primary" style={styles.button} onClick={() => alert("Manage People!")}>
-        Manage People
-      </Button>
-      <DataTable/>
-    </div>
+    <CrudModule
+      createForm={<DynamicForm fields={fields} />}
+      updateForm={<DynamicForm fields={fields} />}
+      config={config}
+    />
   );
-};
-
-export default People;
+}

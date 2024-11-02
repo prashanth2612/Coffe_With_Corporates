@@ -1,48 +1,124 @@
 import React from 'react';
-import { Button, Typography } from 'antd';
-import { DollarOutlined } from '@ant-design/icons';
 
-const { Title, Paragraph } = Typography;
+import useLanguage from '@/locale/useLanguage';
 
-const Taxes = () => {
-  const styles = {
-    container: {
-      padding: '20px',
-      borderRadius: '5px',
-      boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-      backgroundColor: '#ffffff',
-      maxWidth: '600px',
-      margin: '20px auto',
-    },
-    icon: {
-      fontSize: '50px',
-      color: '#1890ff',
-      marginBottom: '10px',
-    },
-    title: {
-      marginBottom: '10px',
-    },
-    paragraph: {
-      marginBottom: '20px',
-    },
-    button: {
-      display: 'block',
-      width: '100%',
-    },
+import { Switch } from 'antd';
+import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
+import CrudModule from '@/modules/CrudModule/CrudModule';
+import TaxForm from '@/forms/TaxForm';
+
+export default function Taxes() {
+  const translate = useLanguage();
+  const entity = 'taxes';
+  const searchConfig = {
+    displayLabels: ['name'],
+    searchFields: 'name',
+    outputValue: '_id',
   };
 
-  return (
-    <div style={styles.container}>
-      <DollarOutlined style={styles.icon} />
-      <Title level={2} style={styles.title}>Taxes</Title>
-      <Paragraph style={styles.paragraph}>
-        Manage tax settings and rates.
-      </Paragraph>
-      <Button type="primary" style={styles.button} onClick={() => alert("Manage Taxes!")}>
-        Manage Taxes
-      </Button>
-    </div>
-  );
-};
+  const deleteModalLabels = ['name'];
 
-export default Taxes;
+  const readColumns = [
+    {
+      title: translate('Name'),
+      dataIndex: 'taxName',
+    },
+    {
+      title: translate('Value'),
+      dataIndex: 'taxValue',
+    },
+    {
+      title: translate('Default'),
+      dataIndex: 'isDefault',
+    },
+    {
+      title: translate('enabled'),
+      dataIndex: 'enabled',
+    },
+  ];
+  const dataTableColumns = [
+    {
+      title: translate('Name'),
+      dataIndex: 'taxName',
+    },
+    {
+      title: translate('Value'),
+      dataIndex: 'taxValue',
+      render: (_, record) => {
+        return <>{record.taxValue + '%'}</>;
+      },
+    },
+    {
+      title: translate('Default'),
+      dataIndex: 'isDefault',
+      key: 'isDefault',
+      onCell: (record, rowIndex) => {
+        return {
+          props: {
+            style: {
+              width: '60px',
+            },
+          },
+        };
+      },
+      render: (_, record) => {
+        return (
+          <Switch
+            checked={record.isDefault}
+            checkedChildren={<CheckOutlined />}
+            unCheckedChildren={<CloseOutlined />}
+          />
+        );
+      },
+    },
+    {
+      title: translate('enabled'),
+      dataIndex: 'enabled',
+      key: 'enabled',
+      onCell: (record, rowIndex) => {
+        return {
+          props: {
+            style: {
+              width: '60px',
+            },
+          },
+        };
+      },
+      render: (_, record) => {
+        return (
+          <Switch
+            checked={record.enabled}
+            checkedChildren={<CheckOutlined />}
+            unCheckedChildren={<CloseOutlined />}
+          />
+        );
+      },
+    },
+  ];
+
+  const Labels = {
+    PANEL_TITLE: translate('taxes'),
+    DATATABLE_TITLE: translate('taxes_list'),
+    ADD_NEW_ENTITY: translate('add_new_tax'),
+    ENTITY_NAME: translate('taxes'),
+  };
+
+  const configPage = {
+    entity,
+    ...Labels,
+  };
+  const config = {
+    ...configPage,
+    readColumns,
+    dataTableColumns,
+    searchConfig,
+    deleteModalLabels,
+  };
+  return (
+    <CrudModule
+      createForm={<TaxForm />}
+      updateForm={<TaxForm isUpdateForm={true} />}
+      config={config}
+    />
+  );
+}

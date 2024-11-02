@@ -1,113 +1,133 @@
-import { LogoutOutlined, ToolOutlined, UserOutlined } from "@ant-design/icons";
-import { Avatar, Dropdown } from "antd";
-import { Header } from "antd/es/layout/layout";
-import UpgradeButton from "./UpgradeButton";
+import { useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { Avatar, Dropdown, Layout } from 'antd';
+
+// import Notifications from '@/components/Notification';
+
+import { LogoutOutlined, ToolOutlined, UserOutlined } from '@ant-design/icons';
+
+import { selectCurrentAdmin } from '@/redux/auth/selectors';
+
+import { FILE_BASE_URL } from '@/config/serverApiConfig';
+
+import useLanguage from '@/locale/useLanguage';
+
+import UpgradeButton from './UpgradeButton';
+
+import { selectLangDirection } from '@/redux/translate/selectors';
 
 export default function HeaderContent() {
-  const ProfileDropDown = () => {
+  const currentAdmin = useSelector(selectCurrentAdmin);
+  const { Header } = Layout;
+
+  const translate = useLanguage();
+
+  const ProfileDropdown = () => {
+    const navigate = useNavigate();
     return (
-      <div className="profileDropdown">
+      <div className="profileDropdown" onClick={() => navigate('/profile')}>
         <Avatar
           size="large"
           className="last"
-          src=""
+          src={currentAdmin?.photo ? FILE_BASE_URL + currentAdmin?.photo : undefined}
           style={{
-            color: "#f56a00",
-            backgroundColor: "#fde3cf",
-            boxShadow: "rgba(150, 190, 238, 0.35) 0px 0px 6px 1px",
+            color: '#f56a00',
+            backgroundColor: currentAdmin?.photo ? 'none' : '#fde3cf',
+            boxShadow: 'rgba(150, 190, 238, 0.35) 0px 0px 6px 1px',
           }}
         >
-          B.E
+          {currentAdmin?.name?.charAt(0)?.toUpperCase()}
         </Avatar>
         <div className="profileDropdownInfo">
-          <p>PRASHANTH GOUD</p>
-          <p>COFFEWITHCORPORATES@GMAIL.COM</p>
+          <p>
+            {currentAdmin?.name} {currentAdmin?.surname}
+          </p>
+          <p>{currentAdmin?.email}</p>
         </div>
       </div>
     );
   };
 
   const DropdownMenu = ({ text }) => {
-    return <span>{text}</span>;
+    return <span style={{}}>{text}</span>;
   };
 
   const items = [
     {
-      label: <ProfileDropDown />,
-      key: "pd",
+      label: <ProfileDropdown className="headerDropDownMenu" />,
+      key: 'ProfileDropdown',
+    },
+    {
+      type: 'divider',
     },
     {
       icon: <UserOutlined />,
-      key: "settings",
-      label: <DropdownMenu text={"Profile Settings....."} />,
+      key: 'settingProfile',
+      label: (
+        <Link to={'/profile'}>
+          <DropdownMenu text={translate('profile_settings')} />
+        </Link>
+      ),
     },
     {
       icon: <ToolOutlined />,
-      key: "settingApp",
-      label: "App settings",
+      key: 'settingApp',
+      label: <Link to={'/settings'}>{translate('app_settings')}</Link>,
     },
+
     {
-      type: "divider",
+      type: 'divider',
     },
+
     {
       icon: <LogoutOutlined />,
-      key: "logout",
-      label: "Logout",
+      key: 'logout',
+      label: <Link to={'/logout'}>{translate('logout')}</Link>,
     },
   ];
 
+  const langDirection = useSelector(selectLangDirection);
   return (
     <Header
       style={{
-        padding: "20px",
-        background: "#f9fafc",
-        display: "flex",
-        flexDirection: "row-reverse",
-        justifyContent: "flex-start",
-        gap: "15px",
+        padding: '20px',
+        background: '#f9fafc',
+        display: 'flex',
+        flexDirection: langDirection === 'rtl' ? 'row' : 'row-reverse',
+        justifyContent: 'flex-start',
+        gap: ' 15px',
       }}
     >
       <Dropdown
         menu={{
           items,
         }}
+        trigger={['click']}
         placement="bottomRight"
-        trigger={["click"]}
-        style={{
-          width: "280px",
-          float: "right",
-        }}
+        stye={{ width: '280px', float: 'right' }}
       >
+        {/* <Badge dot> */}
         <Avatar
           className="last"
-          src={"https://www.w3schools.com/howto/img_avatar.png"}
+          src={currentAdmin?.photo ? FILE_BASE_URL + currentAdmin?.photo : undefined}
           style={{
-            color: "#f56a00",
-            backgroundColor: "#fafac",
-            boxShadow: "rgba(150, 190, 238, 0.35) 0px 0px 10px 2px",
-            float: "right",
-            cursor: "pointer",
+            color: '#f56a00',
+            backgroundColor: currentAdmin?.photo ? 'none' : '#fde3cf',
+            boxShadow: 'rgba(150, 190, 238, 0.35) 0px 0px 10px 2px',
+            float: 'right',
+            cursor: 'pointer',
           }}
-          size={"large"}
+          size="large"
         >
-          First L from be
+          {currentAdmin?.name?.charAt(0)?.toUpperCase()}
         </Avatar>
+        {/* </Badge> */}
       </Dropdown>
-      <UpgradeButton style={{ color: "red" }} />
-      
+
+      {/* <AppsButton /> */}
+
+      <UpgradeButton />
     </Header>
   );
 }
 
-// Avatar
-//langauge controller
-//upgradation button
-
-/** ----- FURTHER ------ **
- *
- *  backend or redux --> User Name
- *  Add Links to the Profile and app settings
- *  Admin Photo from backend
- *  ! Internationalization
- *  ! Currency
- */

@@ -1,5 +1,8 @@
+import React from 'react';
 import { Form, Input } from 'antd';
-import { LockOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
+
+import useLanguage from '@/locale/useLanguage';
 
 export default function ResetPasswordForm() {
   return (
@@ -9,7 +12,6 @@ export default function ResetPasswordForm() {
         rules={[
           {
             required: true,
-            message: 'Please enter your password',
           },
         ]}
       >
@@ -24,17 +26,17 @@ export default function ResetPasswordForm() {
         rules={[
           {
             required: true,
-            message: 'Please confirm your password',
           },
           ({ getFieldValue }) => ({
             validator(_, value) {
               if (!value || getFieldValue('password') === value) {
                 return Promise.resolve();
               }
-              return Promise.reject(new Error('The two passwords do not match!'));
+              return Promise.reject(new Error('The two passwords that you entered do not match!'));
             },
           }),
         ]}
+        hasFeedback
       >
         <Input.Password
           prefix={<LockOutlined className="site-form-item-icon" />}

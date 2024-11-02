@@ -1,5 +1,5 @@
 import * as actionTypes from './types';
-import * as authService from '@/modules/AuthModule/auth';
+import * as authService from '@/auth';
 import { request } from '@/request';
 
 export const login =

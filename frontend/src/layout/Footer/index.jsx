@@ -1,14 +1,10 @@
-export default function Footer(){
+import React from 'react';
+import { Layout } from 'antd';
 
+const { Footer } = Layout;
 
-    return(
-        <>
+const FooterContent = () => (
+  <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
+);
 
-            <div>
-                Footer
-            </div>
-
-
-        </>
-    )
-}
+export default FooterContent;

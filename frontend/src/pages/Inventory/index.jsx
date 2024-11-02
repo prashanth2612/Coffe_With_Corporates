@@ -1,48 +1,71 @@
 import React from 'react';
-import { Button, Typography } from 'antd';
-import { ShoppingCartOutlined } from '@ant-design/icons';
+import CrudModule from '@/modules/CrudModule/CrudModule';
+import InventoryForm from '@/forms/InventoryForm'; // Retaining InventoryForm
+import useLanguage from '@/locale/useLanguage';
 
-const { Title, Paragraph } = Typography;
+export default function Inventory() {
+  const translate = useLanguage();
+  const entity = 'inventory'; // Updated entity name
+  const searchConfig = {
+    displayLabels: ['product'], // Adjusted to search by product
+    searchFields: 'product',
+    outputValue: '_id',
+  };
+  const deleteModalLabels = ['product', 'quantity', 'unitPrice']; // Adjusted to display inventory item labels
 
-const Inventory = () => {
-  const styles = {
-    container: {
-      padding: '20px',
-      borderRadius: '5px',
-      boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-      backgroundColor: '#ffffff',
-      maxWidth: '600px',
-      margin: '20px auto',
+  const readColumns = [
+    {
+      title: translate('Product'),
+      dataIndex: 'product',
     },
-    icon: {
-      fontSize: '50px',
-      color: '#1890ff',
-      marginBottom: '10px',
+    {
+      title: translate('Quantity'),
+      dataIndex: 'quantity',
     },
-    title: {
-      marginBottom: '10px',
+    {
+      title: translate('Unit Price'),
+      dataIndex: 'unitPrice',
     },
-    paragraph: {
-      marginBottom: '20px',
+  ];
+
+  const dataTableColumns = [
+    {
+      title: translate('Product'),
+      dataIndex: ['product'],
     },
-    button: {
-      display: 'block',
-      width: '100%',
+    {
+      title: translate('Quantity'),
+      dataIndex: ['quantity'],
     },
+    {
+      title: translate('Unit Price'),
+      dataIndex: ['unitPrice'],
+    },
+  ];
+
+  const Labels = {
+    PANEL_TITLE: translate('product'),
+    DATATABLE_TITLE: translate('product_list'),
+    ADD_NEW_ENTITY: translate('add_new_product'),
+    ENTITY_NAME: translate('product'),
   };
 
+  const configPage = {
+    entity,
+    ...Labels,
+  };
+  const config = {
+    ...configPage,
+    readColumns,
+    dataTableColumns,
+    searchConfig,
+    deleteModalLabels,
+  };
   return (
-    <div style={styles.container}>
-      <ShoppingCartOutlined style={styles.icon} />
-      <Title level={2} style={styles.title}>Inventory</Title>
-      <Paragraph style={styles.paragraph}>
-        Track and manage your inventory items.
-      </Paragraph>
-      <Button type="primary" style={styles.button} onClick={() => alert("Manage Inventory!")}>
-        Manage Inventory
-      </Button>
-    </div>
+    <CrudModule
+      createForm={<InventoryForm />} // Retaining InventoryForm
+      updateForm={<InventoryForm isUpdateForm={true} />} // Retaining InventoryForm
+      config={config}
+    />
   );
-};
-
-export default Inventory;
+}

@@ -1,48 +1,39 @@
-import React from 'react';
-import { Button, Typography } from 'antd';
-import { WalletOutlined } from '@ant-design/icons';
+import CrudModule from '@/modules/CrudModule/CrudModule';
+import DynamicForm from '@/forms/DynamicForm';
+import { fields } from './config';
 
-const { Title, Paragraph } = Typography;
+import useLanguage from '@/locale/useLanguage';
 
-const ExpenseCategory = () => {
-  const styles = {
-    container: {
-      padding: '20px',
-      borderRadius: '5px',
-      boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-      backgroundColor: '#ffffff',
-      maxWidth: '600px',
-      margin: '20px auto',
-    },
-    icon: {
-      fontSize: '50px',
-      color: '#1890ff',
-      marginBottom: '10px',
-    },
-    title: {
-      marginBottom: '10px',
-    },
-    paragraph: {
-      marginBottom: '20px',
-    },
-    button: {
-      display: 'block',
-      width: '100%',
-    },
+export default function ExpenseCategory() {
+  const translate = useLanguage();
+  const entity = 'expensecategory';
+  const searchConfig = {
+    displayLabels: ['name'],
+    searchFields: 'name',
   };
+  const deleteModalLabels = ['name'];
 
+  const Labels = {
+    PANEL_TITLE: translate('Expense_Category'),
+    DATATABLE_TITLE: translate('Expense_Category_list'),
+    ADD_NEW_ENTITY: translate('add_new_Expense_Category'),
+    ENTITY_NAME: translate('Expense_Category'),
+  };
+  const configPage = {
+    entity,
+    ...Labels,
+  };
+  const config = {
+    ...configPage,
+    fields,
+    searchConfig,
+    deleteModalLabels,
+  };
   return (
-    <div style={styles.container}>
-      <WalletOutlined style={styles.icon} />
-      <Title level={2} style={styles.title}>Expense Categories</Title>
-      <Paragraph style={styles.paragraph}>
-        Manage your expense categories effectively.
-      </Paragraph>
-      <Button type="primary" style={styles.button} onClick={() => alert("Manage Expense Categories!")}>
-        Manage Expense Categories
-      </Button>
-    </div>
+    <CrudModule
+      createForm={<DynamicForm fields={fields} />}
+      updateForm={<DynamicForm fields={fields} />}
+      config={config}
+    />
   );
-};
-
-export default ExpenseCategory;
+}

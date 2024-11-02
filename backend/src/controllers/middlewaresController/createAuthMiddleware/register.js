@@ -4,7 +4,10 @@ const Joi = require('joi');
 
 const mongoose = require('mongoose');
 
-
+const checkAndCorrectURL = require('./checkAndCorrectURL');
+const sendMail = require('./sendMail');
+const { loadSettings } = require('@/middlewares/settings');
+const { useAppSettings } = require('@/settings');
 
 const register = async (req, res, { userModel }) => {
   const UserPasswordModel = mongoose.model(userModel + 'Password');

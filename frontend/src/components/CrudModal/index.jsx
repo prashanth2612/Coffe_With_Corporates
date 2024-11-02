@@ -1,36 +1,45 @@
-import { Modal, Button } from "antd";
-import React, { useState } from "react";
+import { useEffect } from 'react';
+import { Modal } from 'antd';
 
-export default function DeleteModal() {
-  const [visible, setVisible] = useState(false);
+import { useDispatch, useSelector } from 'react-redux';
+import { crud } from '@/redux/crud/actions';
+import { useCrudContext } from '@/context/crud';
+import { selectDeletedItem } from '@/redux/crud/selectors';
 
-  const showModal = () => {
-    setVisible(true);
-  };
+import useLanguage from '@/locale/useLanguage';
+
+export default function DeleteModal({ config, children }) {
+  const translate = useLanguage();
+  let { entity, modalTitle = translate('delete_confirmation') } = config;
+  const dispatch = useDispatch();
+  const { current, isLoading, isSuccess } = useSelector(selectDeletedItem);
+  const { state, crudContextAction } = useCrudContext();
+  const { isModalOpen } = state;
+  const { modal } = crudContextAction;
+
+  useEffect(() => {
+    if (isSuccess) {
+      modal.close();
+      dispatch(crud.list({ entity }));
+    }
+  }, [isSuccess]);
 
   const handleOk = () => {
-    console.log("Confirmed deletion");
-    setVisible(false); // Close the modal after confirming
+    const id = current._id;
+    dispatch(crud.delete({ entity, id }));
   };
-
   const handleCancel = () => {
-    console.log("Canceled deletion");
-    setVisible(false); // Close the modal on cancel
+    if (!isLoading) modal.close();
   };
-
   return (
-    <div>
-      <Button type="primary" onClick={showModal}>
-        Delete Item
-      </Button>
-      <Modal
-        title="Delete Confirmation"
-        visible={visible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-      >
-        <p>Are you sure you want to delete this item?</p>
-      </Modal>
-    </div>
+    <Modal
+      title={modalTitle}
+      open={isModalOpen}
+      onOk={handleOk}
+      onCancel={handleCancel}
+      confirmLoading={isLoading}
+    >
+      {children}
+    </Modal>
   );
 }

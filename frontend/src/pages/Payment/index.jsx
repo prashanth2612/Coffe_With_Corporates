@@ -1,48 +1,86 @@
-import React from 'react';
-import { Button, Typography } from 'antd';
-import { CreditCardOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
+import useLanguage from '@/locale/useLanguage';
+import PaymentDataTableModule from '@/modules/PaymentModule/PaymentDataTableModule';
 
-const { Title, Paragraph } = Typography;
+import { useMoney, useDate } from '@/settings';
 
-const PaymentModule = () => {
-  const styles = {
-    container: {
-      padding: '20px',
-      borderRadius: '5px',
-      boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-      backgroundColor: '#ffffff',
-      maxWidth: '600px',
-      margin: '20px auto',
-    },
-    icon: {
-      fontSize: '50px',
-      color: '#1890ff',
-      marginBottom: '10px',
-    },
-    title: {
-      marginBottom: '10px',
-    },
-    paragraph: {
-      marginBottom: '20px',
-    },
-    button: {
-      display: 'block',
-      width: '100%',
-    },
+export default function Payment() {
+  const translate = useLanguage();
+  const { dateFormat } = useDate();
+  const { moneyFormatter } = useMoney();
+  const searchConfig = {
+    entity: 'client',
+    displayLabels: ['number'],
+    searchFields: 'number',
+    outputValue: '_id',
   };
 
-  return (
-    <div style={styles.container}>
-      <CreditCardOutlined style={styles.icon} />
-      <Title level={2} style={styles.title}>Payment Module</Title>
-      <Paragraph style={styles.paragraph}>
-        Manage all payment-related tasks.
-      </Paragraph>
-      <Button type="primary" style={styles.button} onClick={() => alert("Manage Payment Module!")}>
-        Manage Payment Module
-      </Button>
-    </div>
-  );
-};
+  const deleteModalLabels = ['number'];
+  const dataTableColumns = [
+    {
+      title: translate('Number'),
 
-export default PaymentModule;
+      dataIndex: 'number',
+    },
+    {
+      title: translate('Client'),
+      dataIndex: ['client', 'name'],
+    },
+    {
+      title: translate('Amount'),
+      dataIndex: 'amount',
+      onCell: () => {
+        return {
+          style: {
+            textAlign: 'right',
+            whiteSpace: 'nowrap',
+            direction: 'ltr',
+          },
+        };
+      },
+      render: (amount, record) =>
+        moneyFormatter({ amount: amount, currency_code: record.currency }),
+    },
+    {
+      title: translate('Date'),
+      dataIndex: 'date',
+      render: (date) => {
+        return dayjs(date).format(dateFormat);
+      },
+    },
+    {
+      title: translate('Number'),
+      dataIndex: ['invoice', 'number'],
+    },
+    {
+      title: translate('year'),
+      dataIndex: ['invoice', 'year'],
+    },
+    {
+      title: translate('Payment Mode'),
+      dataIndex: ['paymentMode', 'name'],
+    },
+  ];
+
+  const entity = 'payment';
+
+  const Labels = {
+    PANEL_TITLE: translate('payment'),
+    DATATABLE_TITLE: translate('payment_list'),
+    ADD_NEW_ENTITY: translate('add_new_payment'),
+    ENTITY_NAME: translate('payment'),
+  };
+
+  const configPage = {
+    entity,
+    ...Labels,
+  };
+  const config = {
+    ...configPage,
+    disableAdd: true,
+    dataTableColumns,
+    searchConfig,
+    deleteModalLabels,
+  };
+  return <PaymentDataTableModule config={config} />;
+}

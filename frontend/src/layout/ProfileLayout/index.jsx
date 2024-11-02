@@ -1,14 +1,8 @@
-export default function ProfileLayout(){
+import { ProfileContextProvider } from '@/context/profileContext';
+import React from 'react';
 
+const ProfileLayout = ({ children }) => {
+  return <ProfileContextProvider>{children}</ProfileContextProvider>;
+};
 
-    return(
-        <>
-
-            <div>
-            ProfileLayout
-            </div>
-
-
-        </>
-    )
-}
+export default ProfileLayout;

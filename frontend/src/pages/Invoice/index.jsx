@@ -1,48 +1,129 @@
-import React from 'react';
-import { Button, Typography } from 'antd';
-import { FileDoneOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
+import { Tag } from 'antd';
+import useLanguage from '@/locale/useLanguage';
+import { tagColor } from '@/utils/statusTagColor';
 
-const { Title, Paragraph } = Typography;
+import { useMoney, useDate } from '@/settings';
+import InvoiceDataTableModule from '@/modules/InvoiceModule/InvoiceDataTableModule';
 
-const Invoice = () => {
-  const styles = {
-    container: {
-      padding: '20px',
-      borderRadius: '5px',
-      boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-      backgroundColor: '#ffffff',
-      maxWidth: '600px',
-      margin: '20px auto',
+export default function Invoice() {
+  const translate = useLanguage();
+  const { dateFormat } = useDate();
+  const entity = 'invoice';
+  const { moneyFormatter } = useMoney();
+
+  const searchConfig = {
+    entity: 'client',
+    displayLabels: ['name'],
+    searchFields: 'name',
+  };
+  const deleteModalLabels = ['number', 'client.name'];
+  const dataTableColumns = [
+    {
+      title: translate('Number'),
+      dataIndex: 'number',
     },
-    icon: {
-      fontSize: '50px',
-      color: '#1890ff',
-      marginBottom: '10px',
+    {
+      title: translate('Client'),
+      dataIndex: ['client', 'name'],
     },
-    title: {
-      marginBottom: '10px',
+    {
+      title: translate('Date'),
+      dataIndex: 'date',
+      render: (date) => {
+        return dayjs(date).format(dateFormat);
+      },
     },
-    paragraph: {
-      marginBottom: '20px',
+    {
+      title: translate('expired Date'),
+      dataIndex: 'expiredDate',
+      render: (date) => {
+        return dayjs(date).format(dateFormat);
+      },
     },
-    button: {
-      display: 'block',
-      width: '100%',
+    {
+      title: translate('Total'),
+      dataIndex: 'total',
+      onCell: () => {
+        return {
+          style: {
+            textAlign: 'right',
+            whiteSpace: 'nowrap',
+            direction: 'ltr',
+          },
+        };
+      },
+      render: (total, record) => {
+        return moneyFormatter({ amount: total, currency_code: record.currency });
+      },
     },
+    {
+      title: translate('paid'),
+      dataIndex: 'credit',
+      onCell: () => {
+        return {
+          style: {
+            textAlign: 'right',
+            whiteSpace: 'nowrap',
+            direction: 'ltr',
+          },
+        };
+      },
+      render: (total, record) => moneyFormatter({ amount: total, currency_code: record.currency }),
+    },
+    {
+      title: translate('Status'),
+      dataIndex: 'status',
+      render: (status) => {
+        let tagStatus = tagColor(status);
+
+        return (
+          <Tag color={tagStatus.color}>
+            {/* {tagStatus.icon + ' '} */}
+            {status && translate(tagStatus.label)}
+          </Tag>
+        );
+      },
+    },
+    {
+      title: translate('Payment'),
+      dataIndex: 'paymentStatus',
+      render: (paymentStatus) => {
+        let tagStatus = tagColor(paymentStatus);
+
+        return (
+          <Tag color={tagStatus.color}>
+            {/* {tagStatus.icon + ' '} */}
+            {paymentStatus && translate(paymentStatus)}
+          </Tag>
+        );
+      },
+    },
+    {
+      title: translate('Created By'),
+      dataIndex: ['createdBy', 'name'],
+    },
+  ];
+
+  const Labels = {
+    PANEL_TITLE: translate('invoice'),
+    DATATABLE_TITLE: translate('invoice_list'),
+    ADD_NEW_ENTITY: translate('add_new_invoice'),
+    ENTITY_NAME: translate('invoice'),
+
+    RECORD_ENTITY: translate('record_payment'),
   };
 
-  return (
-    <div style={styles.container}>
-      <FileDoneOutlined style={styles.icon} />
-      <Title level={2} style={styles.title}>Invoices</Title>
-      <Paragraph style={styles.paragraph}>
-        Create and manage customer invoices.
-      </Paragraph>
-      <Button type="primary" style={styles.button} onClick={() => alert("Manage Invoices!")}>
-        Manage Invoices
-      </Button>
-    </div>
-  );
-};
+  const configPage = {
+    entity,
+    ...Labels,
+  };
+  const config = {
+    ...configPage,
+    dataTableColumns,
+    searchConfig,
+    deleteModalLabels,
+  };
 
-export default Invoice;
+  return <InvoiceDataTableModule config={config} />;
+}

@@ -1,48 +1,106 @@
-import React from 'react';
-import { Button, Typography } from 'antd';
-import { CommentOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
+import { Tag } from 'antd';
+import { tagColor } from '@/utils/statusTagColor';
+import QuoteDataTableModule from '@/modules/QuoteModule/QuoteDataTableModule';
+import { useMoney, useDate } from '@/settings';
+import useLanguage from '@/locale/useLanguage';
 
-const { Title, Paragraph } = Typography;
+export default function Quote() {
+  const translate = useLanguage();
+  const { dateFormat } = useDate();
+  const entity = 'quote';
+  const { moneyFormatter } = useMoney();
 
-const Quote = () => {
-  const styles = {
-    container: {
-      padding: '20px',
-      borderRadius: '5px',
-      boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-      backgroundColor: '#ffffff',
-      maxWidth: '600px',
-      margin: '20px auto',
+  const searchConfig = {
+    entity: 'client',
+    displayLabels: ['name'],
+    searchFields: 'name',
+  };
+  const deleteModalLabels = ['number', 'client.name'];
+  const dataTableColumns = [
+    {
+      title: translate('Number'),
+      dataIndex: 'number',
     },
-    icon: {
-      fontSize: '50px',
-      color: '#1890ff',
-      marginBottom: '10px',
+    {
+      title: translate('Client'),
+      dataIndex: ['client', 'name'],
     },
-    title: {
-      marginBottom: '10px',
+    {
+      title: translate('Date'),
+      dataIndex: 'date',
+      render: (date) => {
+        return dayjs(date).format(dateFormat);
+      },
     },
-    paragraph: {
-      marginBottom: '20px',
+    {
+      title: translate('expired Date'),
+      dataIndex: 'expiredDate',
+      render: (date) => {
+        return dayjs(date).format(dateFormat);
+      },
     },
-    button: {
-      display: 'block',
-      width: '100%',
+    {
+      title: translate('Sub Total'),
+      dataIndex: 'subTotal',
+      onCell: () => {
+        return {
+          style: {
+            textAlign: 'right',
+            whiteSpace: 'nowrap',
+            direction: 'ltr',
+          },
+        };
+      },
+      render: (total, record) => moneyFormatter({ amount: total, currency_code: record.currency }),
     },
+    {
+      title: translate('Total'),
+      dataIndex: 'total',
+      onCell: () => {
+        return {
+          style: {
+            textAlign: 'right',
+            whiteSpace: 'nowrap',
+            direction: 'ltr',
+          },
+        };
+      },
+      render: (total, record) => moneyFormatter({ amount: total, currency_code: record.currency }),
+    },
+
+    {
+      title: translate('Status'),
+      dataIndex: 'status',
+      render: (status) => {
+        let tagStatus = tagColor(status);
+
+        return (
+          <Tag color={tagStatus.color}>
+            {/* {tagStatus.icon + ' '} */}
+            {status && translate(tagStatus.label)}
+          </Tag>
+        );
+      },
+    },
+  ];
+
+  const Labels = {
+    PANEL_TITLE: translate('proforma invoice'),
+    DATATABLE_TITLE: translate('proforma invoice_list'),
+    ADD_NEW_ENTITY: translate('add_new_proforma invoice'),
+    ENTITY_NAME: translate('proforma invoice'),
   };
 
-  return (
-    <div style={styles.container}>
-      <CommentOutlined style={styles.icon} />
-      <Title level={2} style={styles.title}>Quotes</Title>
-      <Paragraph style={styles.paragraph}>
-        Create and manage customer quotes.
-      </Paragraph>
-      <Button type="primary" style={styles.button} onClick={() => alert("Manage Quotes!")}>
-        Manage Quotes
-      </Button>
-    </div>
-  );
-};
-
-export default Quote;
+  const configPage = {
+    entity,
+    ...Labels,
+  };
+  const config = {
+    ...configPage,
+    dataTableColumns,
+    searchConfig,
+    deleteModalLabels,
+  };
+  return <QuoteDataTableModule config={config} />;
+}

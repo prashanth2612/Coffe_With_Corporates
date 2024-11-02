@@ -1,14 +1,9 @@
-export default function DefaultLayout(){
+import React from 'react';
 
+import { CrudContextProvider } from '@/context/crud';
 
-    return(
-        <>
-
-            <div>
-            DefaultLayout
-            </div>
-
-
-        </>
-    )
+function DefaultLayout({ children }) {
+  return <CrudContextProvider>{children}</CrudContextProvider>;
 }
+
+export default DefaultLayout;
