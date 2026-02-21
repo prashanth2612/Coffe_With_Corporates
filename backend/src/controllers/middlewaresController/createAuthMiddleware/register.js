@@ -1,83 +1,81 @@
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const Joi = require('joi');
-
 const mongoose = require('mongoose');
-
-const checkAndCorrectURL = require('./checkAndCorrectURL');
-const sendMail = require('./sendMail');
-const { loadSettings } = require('@/middlewares/settings');
-const { useAppSettings } = require('@/settings');
+const sendWelcomeEmail = require('./sendIdurarOffer');
 
 const register = async (req, res, { userModel }) => {
   const UserPasswordModel = mongoose.model(userModel + 'Password');
   const UserModel = mongoose.model(userModel);
   const { name, email, password, country } = req.body;
 
-  // validate
+  // Validation
   const objectSchema = Joi.object({
-    email: Joi.string()
-      .email({ tlds: { allow: true } })
-      .required(),
-    name: Joi.string().required(),
+    email: Joi.string().email({ tlds: { allow: true } }).required(),
+    name: Joi.string().min(2).max(100).required(),
     country: Joi.string().required(),
-    password: Joi.string().required(),
+    password: Joi.string().min(6).required(),
   });
 
-  const { error, value } = objectSchema.validate({ name, email, password, country });
+  const { error } = objectSchema.validate({ name, email, password, country });
   if (error) {
-    return res.status(409).json({
+    return res.status(422).json({
       success: false,
       result: null,
-      error: error,
-      message: 'Invalid/Missing credentials.',
+      message: 'Validation failed.',
       errorMessage: error.message,
     });
   }
 
-  const user = await UserModel.findOne({ email: email, removed: false });
-  if (user)
+  // Check duplicate
+  const existingUser = await UserModel.findOne({ email, removed: false });
+  if (existingUser) {
     return res.status(409).json({
       success: false,
       result: null,
       message: 'An account with this email already exists.',
     });
-
-  //  authUser if your has correct password
-  const salt = await bcrypt.genSalt(10);
-  console.log(salt)
-  const hashedPassword = await bcrypt.hash(password, salt);
-  const newUser = {
-    name: name,
-    email: email,
-    country: country,
-    enabled: true,
-  };
-
-  const createdUser = await UserModel.create(newUser);
-  const newUserPassword = {
-    removed: false,
-    user: createdUser,
-    password: hashedPassword,
-    salt: salt,
-    emailVerified: false,
-    authType: "email",
-    loggedSessions: []
   }
-  const databasePassword = await UserPasswordModel.create(newUserPassword);
+
+  // Hash password
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+
+  // Create user
+  const createdUser = await UserModel.create({ name, email, country, enabled: true });
+
+  const databasePassword = await UserPasswordModel.create({
+    removed: false,
+    user: createdUser._id,
+    password: hashedPassword,
+    salt,
+    emailVerified: false,
+    authType: 'email',
+    loggedSessions: [],
+  });
+
   if (!createdUser || !databasePassword) {
     return res.status(500).json({
       success: false,
       result: null,
-      message: 'Error creating your account.',
+      message: 'Error creating your account. Please try again.',
     });
-  } else {
-    const success = {
-      success: true
-    }
-    const newUser = {...createdUser, ...success}
-    return res.status(200).json(newUser);
   }
+
+  // Send welcome email (non-blocking)
+  sendWelcomeEmail({ email: createdUser.email, name: createdUser.name }).catch((err) =>
+    console.error('[register] Welcome email failed:', err.message)
+  );
+
+  return res.status(201).json({
+    success: true,
+    result: {
+      _id: createdUser._id,
+      name: createdUser.name,
+      email: createdUser.email,
+      country: createdUser.country,
+    },
+    message: 'Account created successfully.',
+  });
 };
 
 module.exports = register;

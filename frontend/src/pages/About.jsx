@@ -6,20 +6,36 @@ const About = () => {
   return (
     <Result
       status="info"
-      title="Coffe With Corporats"
-      subTitle={translate('Looking for help or interested in collaboration?')}
+      title={'Coffee With Corporates'}
+      subTitle={translate('Do you need help on customize of this app')}
       extra={
         <>
           <p>
-            GitHub Profile: <a href="https://github.com/prashanth2612" target="_blank" rel="noopener noreferrer">https://github.com/prashanth2612</a>
+            Developer : <strong>Katepally Prashanth Goud</strong>
+          </p>
+          <p>
+            Email :{' '}
+            <a href="mailto:prashanthit8074@gmail.com">prashanthit8074@gmail.com</a>
+          </p>
+          <p>
+            GitHub :{' '}
+            <a href="https://github.com/prashanth2612" target="_blank" rel="noreferrer">
+              github.com/prashanth2612
+            </a>
+          </p>
+          <p>
+            LinkedIn :{' '}
+            <a href="https://linkedin.com/in/prashanth-goud" target="_blank" rel="noreferrer">
+              linkedin.com/in/prashanth-goud
+            </a>
           </p>
           <Button
             type="primary"
             onClick={() => {
-              window.open(`https://github.com/prashanth2612`);
+              window.open('mailto:prashanthit8074@gmail.com');
             }}
           >
-            {translate('Visit GitHub Profile')}
+            {translate('Contact us')}
           </Button>
         </>
       }

@@ -27,6 +27,11 @@ export default ({ mode }) => {
           changeOrigin: true,
           secure: false,
         },
+        '/download': {
+          target: proxy_url,
+          changeOrigin: true,
+          secure: false,
+        },
       },
     },
   };

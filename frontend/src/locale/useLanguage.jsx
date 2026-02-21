@@ -4,6 +4,7 @@ import { selectCurrentLang } from '@/redux/translate/selectors';
 
 const getLabel = (lang, key) => {
   try {
+    if (!lang || typeof lang !== 'object') return key; // guard against undefined/stale persisted state
     const lowerCaseKey = key
       .toLowerCase()
       .replace(/[^a-zA-Z0-9]/g, '_')

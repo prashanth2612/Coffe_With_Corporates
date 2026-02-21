@@ -1,7 +1,7 @@
 import React from 'react';
 
 import CrudModule from '@/modules/CrudModule/CrudModule';
-import OrderForm from '@/forms/OrderForm'; // Ensure to create this form
+import OrderForm from '@/forms/OrderForm';
 import useLanguage from '@/locale/useLanguage';
 
 export default function Order() {
@@ -9,7 +9,7 @@ export default function Order() {
   const entity = 'order';
   const searchConfig = {
     displayLabels: ['orderId', 'status'],
-    searchFields: 'orderId,status',
+    searchFields: 'orderId,products,status',
     outputValue: '_id',
   };
 
@@ -21,7 +21,7 @@ export default function Order() {
       dataIndex: 'orderId',
     },
     {
-      title: translate('Product'),
+      title: translate('Products'),
       dataIndex: 'products',
     },
     {
@@ -31,6 +31,7 @@ export default function Order() {
     {
       title: translate('Price'),
       dataIndex: 'price',
+      render: (value) => (value != null ? `$ ${value}` : ''),
     },
     {
       title: translate('Status'),
@@ -41,13 +42,14 @@ export default function Order() {
       dataIndex: 'notes',
     },
   ];
+
   const dataTableColumns = [
     {
       title: translate('Order ID'),
       dataIndex: 'orderId',
     },
     {
-      title: translate('Product'),
+      title: translate('Products'),
       dataIndex: 'products',
     },
     {
@@ -57,15 +59,11 @@ export default function Order() {
     {
       title: translate('Price'),
       dataIndex: 'price',
+      render: (value) => (value != null ? `$ ${value}` : ''),
     },
-
     {
       title: translate('Status'),
       dataIndex: 'status',
-    },
-    {
-      title: translate('Note'),
-      dataIndex: 'notes',
     },
   ];
 

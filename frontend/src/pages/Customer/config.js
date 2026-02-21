@@ -11,21 +11,22 @@ export const fields = {
   },
   name: {
     type: 'string',
-    disableForForm: true,
+    disableForForm: true,   // computed by backend from people/company
   },
-  country: {
-    type: 'country',
-    // color: 'red',
-    disableForForm: true,
-  },
+  // These fields come from the migrated flat structure and are shown in the read panel
   phone: {
     type: 'phone',
-    disableForForm: true,
+    disableForForm: true,   // set via people/company sub-docs, not directly
   },
   email: {
     type: 'email',
     disableForForm: true,
   },
+  country: {
+    type: 'country',
+    disableForForm: true,
+  },
+  // People sub-doc selector (shown only when type === 'people')
   people: {
     type: 'search',
     label: 'people',
@@ -39,6 +40,7 @@ export const fields = {
     disableForTable: true,
     feedback: 'people',
   },
+  // Company sub-doc selector (shown only when type === 'company')
   company: {
     type: 'search',
     label: 'company',

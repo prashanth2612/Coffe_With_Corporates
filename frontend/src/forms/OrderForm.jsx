@@ -77,12 +77,18 @@ export default function OrderForm({ isUpdateForm = false }) {
             required: true,
           },
         ]}
+        initialValue="pending"
       >
         <Select>
           <Select.Option value="pending">{translate('Pending')}</Select.Option>
+          <Select.Option value="in progress">{translate('In Progress')}</Select.Option>
           <Select.Option value="shipped">{translate('Shipped')}</Select.Option>
           <Select.Option value="delivered">{translate('Delivered')}</Select.Option>
+          <Select.Option value="completed">{translate('Completed')}</Select.Option>
+          <Select.Option value="on hold">{translate('On Hold')}</Select.Option>
           <Select.Option value="cancelled">{translate('Cancelled')}</Select.Option>
+          <Select.Option value="returned">{translate('Returned')}</Select.Option>
+          <Select.Option value="refunded">{translate('Refunded')}</Select.Option>
         </Select>
       </Form.Item>
 

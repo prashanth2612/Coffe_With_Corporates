@@ -1,24 +1,32 @@
 exports.catchErrors = (fn) => {
   return function (req, res, next) {
-    return Promise.resolve(fn(req, res, next)).catch((error) => {
-      if (error.name === 'ValidationError') {
-        return res.status(400).json({
-          success: false,
-          result: null,
-          message: 'Required fields are not supplied',
-          controller: fn.name,
-          error: error.message, // error message only for clarity
-        });
-      } else {
-        // Server Error
-        return res.status(500).json({
-          success: false,
-          result: null,
-          message: error.message,
-          controller: fn.name,
-          error: error.message,
-        });
-      }
-    });
+    return Promise.resolve(fn(req, res, next)).catch(next);
   };
+};
+
+exports.notFound = (req, res, next) => {
+  const err = new Error(`Route not found: ${req.originalUrl}`);
+  err.status = 404;
+  next(err);
+};
+
+exports.developmentErrors = (err, req, res, _next) => {
+  const statusCode = err.status || 500;
+  res.status(statusCode).json({
+    success: false,
+    result: null,
+    message: err.message,
+    stack: err.stack,
+    statusCode,
+  });
+};
+
+exports.productionErrors = (err, req, res, _next) => {
+  const statusCode = err.status || 500;
+  res.status(statusCode).json({
+    success: false,
+    result: null,
+    message: statusCode === 500 ? 'An internal server error occurred.' : err.message,
+    statusCode,
+  });
 };

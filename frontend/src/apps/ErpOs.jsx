@@ -1,7 +1,9 @@
 import { lazy, Suspense } from 'react';
-
+import { useSelector } from 'react-redux';
+import { selectAuth } from '@/redux/auth/selectors';
 import { AppContextProvider } from '@/context/appContext';
 import PageLoader from '@/components/PageLoader';
+import AuthRouter from '@/router/AuthRouter';
 import Localization from '@/locale/Localization';
 
 const ErpApp = lazy(() => import('./ErpApp'));
@@ -17,9 +19,14 @@ const DefaultApp = () => (
 );
 
 export default function ErpOs() {
-  console.log(
-    '🚀 Welcome to COFFEE WITH CORPORATES! Did you know that we also offer commercial customization services? Contact us at coffe with corporates.com for more information.'
-  );
+  const { isLoggedIn } = useSelector(selectAuth);
+
+  if (!isLoggedIn)
+    return (
+      <Localization>
+        <AuthRouter />
+      </Localization>
+    );
 
   return <DefaultApp />;
 }

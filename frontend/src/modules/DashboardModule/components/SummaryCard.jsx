@@ -6,6 +6,15 @@ import { useSelector } from 'react-redux';
 export default function AnalyticSummaryCard({ title, tagColor, data, prefix, isLoading = false }) {
   const { moneyFormatter } = useMoney();
   const money_format_settings = useSelector(selectMoneyFormat);
+
+  // Safely parse the amount — default to 0 if null / undefined / NaN
+  const safeAmount = isNaN(Number(data)) || data === null || data === undefined ? 0 : Number(data);
+
+  const formatted = moneyFormatter({
+    amount: safeAmount,
+    currency_code: money_format_settings?.default_currency_code,
+  });
+
   return (
     <Col
       className="gutter-row"
@@ -30,7 +39,7 @@ export default function AnalyticSummaryCard({ title, tagColor, data, prefix, isL
             {title}
           </h3>
         </div>
-        <Divider style={{ padding: 0, margin: 0 }}></Divider>
+        <Divider style={{ padding: 0, margin: 0 }} />
         <div className="pad15">
           <Row gutter={[0, 0]} justify="space-between" wrap={false}>
             <Col className="gutter-row" flex="85px" style={{ textAlign: 'left' }}>
@@ -46,7 +55,7 @@ export default function AnalyticSummaryCard({ title, tagColor, data, prefix, isL
                 alignItems: 'center',
               }}
               type="vertical"
-            ></Divider>
+            />
             <Col
               className="gutter-row"
               flex="auto"
@@ -59,12 +68,7 @@ export default function AnalyticSummaryCard({ title, tagColor, data, prefix, isL
               {isLoading ? (
                 <Spin />
               ) : (
-                <Tooltip
-                  title={data}
-                  style={{
-                    direction: 'ltr',
-                  }}
-                >
+                <Tooltip title={formatted} style={{ direction: 'ltr' }}>
                   <Tag
                     color={tagColor}
                     style={{
@@ -77,15 +81,7 @@ export default function AnalyticSummaryCard({ title, tagColor, data, prefix, isL
                       direction: 'ltr',
                     }}
                   >
-                    {data
-                      ? moneyFormatter({
-                          amount: data,
-                          currency_code: money_format_settings?.default_currency_code,
-                        })
-                      : moneyFormatter({
-                          amount: 0,
-                          currency_code: money_format_settings?.default_currency_code,
-                        })}
+                    {formatted}
                   </Tag>
                 </Tooltip>
               )}

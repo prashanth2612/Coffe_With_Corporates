@@ -36,30 +36,15 @@ const Item = ({ item, currentErp }) => {
         <p>{item.description}</p>
       </Col>
       <Col className="gutter-row" span={4}>
-        <p
-          style={{
-            textAlign: 'right',
-          }}
-        >
+        <p style={{ textAlign: 'right' }}>
           {moneyFormatter({ amount: item.price, currency_code: currentErp.currency })}
         </p>
       </Col>
       <Col className="gutter-row" span={4}>
-        <p
-          style={{
-            textAlign: 'right',
-          }}
-        >
-          {item.quantity}
-        </p>
+        <p style={{ textAlign: 'right' }}>{item.quantity}</p>
       </Col>
       <Col className="gutter-row" span={5}>
-        <p
-          style={{
-            textAlign: 'right',
-            fontWeight: '700',
-          }}
-        >
+        <p style={{ textAlign: 'right', fontWeight: '700' }}>
           {moneyFormatter({ amount: item.total, currency_code: currentErp.currency })}
         </p>
       </Col>
@@ -67,6 +52,33 @@ const Item = ({ item, currentErp }) => {
     </Row>
   );
 };
+
+// Safely extract display fields from a client object.
+// The client may be:
+//   - a populated Client doc with nested people/company sub-docs (from invoice autopopulate)
+//   - a flat migrated object with direct phone/email/address fields (from client read)
+function extractClientDisplay(clientObj) {
+  if (!clientObj) return { name: '', email: '', phone: '', address: '' };
+
+  // If the client has a type and a nested sub-doc (people or company), use that
+  const sub = clientObj.type ? clientObj[clientObj.type] : null;
+  if (sub && typeof sub === 'object') {
+    return {
+      name: clientObj.name || sub.name || `${sub.firstname || ''} ${sub.lastname || ''}`.trim(),
+      email: sub.email || clientObj.email || '',
+      phone: sub.phone || clientObj.phone || '',
+      address: sub.address || clientObj.address || '',
+    };
+  }
+
+  // Flat migrated client object
+  return {
+    name: clientObj.name || '',
+    email: clientObj.email || '',
+    phone: clientObj.phone || '',
+    address: clientObj.address || '',
+  };
+}
 
 export default function ReadItem({ config, selectedItem }) {
   const translate = useLanguage();
@@ -81,12 +93,7 @@ export default function ReadItem({ config, selectedItem }) {
 
   const resetErp = {
     status: '',
-    client: {
-      name: '',
-      email: '',
-      phone: '',
-      address: '',
-    },
+    client: { name: '', email: '', phone: '', address: '' },
     subTotal: 0,
     taxTotal: 0,
     taxRate: 0,
@@ -98,7 +105,7 @@ export default function ReadItem({ config, selectedItem }) {
 
   const [itemslist, setItemsList] = useState([]);
   const [currentErp, setCurrentErp] = useState(selectedItem ?? resetErp);
-  const [client, setClient] = useState({});
+  const [clientDisplay, setClientDisplay] = useState({ name: '', email: '', phone: '', address: '' });
 
   useEffect(() => {
     if (currentResult) {
@@ -107,7 +114,7 @@ export default function ReadItem({ config, selectedItem }) {
       if (items) {
         setItemsList(items);
         setCurrentErp(currentResult);
-      } else if (invoice.items) {
+      } else if (invoice?.items) {
         setItemsList(invoice.items);
         setCurrentErp({ ...invoice.items, ...others, ...invoice });
       }
@@ -119,17 +126,13 @@ export default function ReadItem({ config, selectedItem }) {
   }, [currentResult]);
 
   useEffect(() => {
-    if (currentErp?.client) {
-      setClient(currentErp.client[currentErp.client.type]);
-    }
+    setClientDisplay(extractClientDisplay(currentErp?.client));
   }, [currentErp]);
 
   return (
     <>
       <PageHeader
-        onBack={() => {
-          navigate(`/${entity.toLowerCase()}`);
-        }}
+        onBack={() => navigate(`/${entity.toLowerCase()}`)}
         title={`${ENTITY_NAME} # ${currentErp.number}/${currentErp.year || ''}`}
         ghost={false}
         tags={[
@@ -145,21 +148,16 @@ export default function ReadItem({ config, selectedItem }) {
         extra={[
           <Button
             key={`${uniqueId()}`}
-            onClick={() => {
-              navigate(`/${entity.toLowerCase()}`);
-            }}
+            onClick={() => navigate(`/${entity.toLowerCase()}`)}
             icon={<CloseCircleOutlined />}
           >
             {translate('Close')}
           </Button>,
           <Button
             key={`${uniqueId()}`}
-            onClick={() => {
-              window.open(
-                `${DOWNLOAD_BASE_URL}${entity}/${entity}-${currentErp._id}.pdf`,
-                '_blank'
-              );
-            }}
+            onClick={() =>
+              window.open(`${DOWNLOAD_BASE_URL}${entity}/${entity}-${currentErp._id}.pdf`, '_blank')
+            }
             icon={<FilePdfOutlined />}
           >
             {translate('Download PDF')}
@@ -167,33 +165,23 @@ export default function ReadItem({ config, selectedItem }) {
           <Button
             key={`${uniqueId()}`}
             loading={mailInProgress}
-            onClick={() => {
-              send(currentErp._id);
-            }}
+            onClick={() => send(currentErp._id)}
             icon={<MailOutlined />}
           >
             {translate('Send by Email')}
           </Button>,
           <Button
             key={`${uniqueId()}`}
-            onClick={() => {
-              dispatch(erp.convert({ entity, id: currentErp._id }));
-            }}
+            onClick={() => dispatch(erp.convert({ entity, id: currentErp._id }))}
             icon={<RetweetOutlined />}
             style={{ display: entity === 'quote' ? 'inline-block' : 'none' }}
           >
             {translate('Convert to Invoice')}
           </Button>,
-
           <Button
             key={`${uniqueId()}`}
             onClick={() => {
-              dispatch(
-                erp.currentAction({
-                  actionType: 'update',
-                  data: currentErp,
-                })
-              );
+              dispatch(erp.currentAction({ actionType: 'update', data: currentErp }));
               navigate(`/${entity.toLowerCase()}/update/${currentErp._id}`);
             }}
             type="primary"
@@ -202,121 +190,71 @@ export default function ReadItem({ config, selectedItem }) {
             {translate('Edit')}
           </Button>,
         ]}
-        style={{
-          padding: '20px 0px',
-        }}
+        style={{ padding: '20px 0px' }}
       >
         <Row>
           <Statistic title="Status" value={currentErp.status} />
           <Statistic
             title={translate('SubTotal')}
-            value={moneyFormatter({
-              amount: currentErp.subTotal,
-              currency_code: currentErp.currency,
-            })}
-            style={{
-              margin: '0 32px',
-            }}
+            value={moneyFormatter({ amount: currentErp.subTotal, currency_code: currentErp.currency })}
+            style={{ margin: '0 32px' }}
           />
           <Statistic
             title={translate('Total')}
             value={moneyFormatter({ amount: currentErp.total, currency_code: currentErp.currency })}
-            style={{
-              margin: '0 32px',
-            }}
+            style={{ margin: '0 32px' }}
           />
           <Statistic
             title={translate('Paid')}
-            value={moneyFormatter({
-              amount: currentErp.credit,
-              currency_code: currentErp.currency,
-            })}
-            style={{
-              margin: '0 32px',
-            }}
+            value={moneyFormatter({ amount: currentErp.credit, currency_code: currentErp.currency })}
+            style={{ margin: '0 32px' }}
           />
         </Row>
       </PageHeader>
       <Divider dashed />
-      <Descriptions title={`Client : ${currentErp.client.name}`}>
-        <Descriptions.Item label={translate('Address')}>{client.address}</Descriptions.Item>
-        <Descriptions.Item label={translate('email')}>{client.email}</Descriptions.Item>
-        <Descriptions.Item label={translate('Phone')}>{client.phone}</Descriptions.Item>
+      <Descriptions title={`Client : ${clientDisplay.name}`}>
+        <Descriptions.Item label={translate('Address')}>{clientDisplay.address}</Descriptions.Item>
+        <Descriptions.Item label={translate('email')}>{clientDisplay.email}</Descriptions.Item>
+        <Descriptions.Item label={translate('Phone')}>{clientDisplay.phone}</Descriptions.Item>
       </Descriptions>
       <Divider />
       <Row gutter={[12, 0]}>
         <Col className="gutter-row" span={11}>
-          <p>
-            <strong>{translate('Product')}</strong>
-          </p>
+          <p><strong>{translate('Product')}</strong></p>
         </Col>
         <Col className="gutter-row" span={4}>
-          <p
-            style={{
-              textAlign: 'right',
-            }}
-          >
-            <strong>{translate('Price')}</strong>
-          </p>
+          <p style={{ textAlign: 'right' }}><strong>{translate('Price')}</strong></p>
         </Col>
         <Col className="gutter-row" span={4}>
-          <p
-            style={{
-              textAlign: 'right',
-            }}
-          >
-            <strong>{translate('Quantity')}</strong>
-          </p>
+          <p style={{ textAlign: 'right' }}><strong>{translate('Quantity')}</strong></p>
         </Col>
         <Col className="gutter-row" span={5}>
-          <p
-            style={{
-              textAlign: 'right',
-            }}
-          >
-            <strong>{translate('Total')}</strong>
-          </p>
+          <p style={{ textAlign: 'right' }}><strong>{translate('Total')}</strong></p>
         </Col>
         <Divider />
       </Row>
       {itemslist.map((item) => (
-        <Item key={item._id} item={item} currentErp={currentErp}></Item>
+        <Item key={item._id} item={item} currentErp={currentErp} />
       ))}
-      <div
-        style={{
-          width: '300px',
-          float: 'right',
-          textAlign: 'right',
-          fontWeight: '700',
-        }}
-      >
+      <div style={{ width: '300px', float: 'right', textAlign: 'right', fontWeight: '700' }}>
         <Row gutter={[12, -5]}>
           <Col className="gutter-row" span={12}>
             <p>{translate('Sub Total')} :</p>
           </Col>
-
           <Col className="gutter-row" span={12}>
-            <p>
-              {moneyFormatter({ amount: currentErp.subTotal, currency_code: currentErp.currency })}
-            </p>
+            <p>{moneyFormatter({ amount: currentErp.subTotal, currency_code: currentErp.currency })}</p>
           </Col>
           <Col className="gutter-row" span={12}>
-            <p>
-              {translate('Tax Total')} ({currentErp.taxRate} %) :
-            </p>
+            <p>{translate('Tax Total')} ({currentErp.taxRate} %) :</p>
           </Col>
           <Col className="gutter-row" span={12}>
-            <p>
-              {moneyFormatter({ amount: currentErp.taxTotal, currency_code: currentErp.currency })}
-            </p>
+            <p>{moneyFormatter({ amount: currentErp.taxTotal, currency_code: currentErp.currency })}</p>
           </Col>
           <Col className="gutter-row" span={12}>
             <p>{translate('Total')} :</p>
           </Col>
           <Col className="gutter-row" span={12}>
-            <p>
-              {moneyFormatter({ amount: currentErp.total, currency_code: currentErp.currency })}
-            </p>
+            <p>{moneyFormatter({ amount: currentErp.total, currency_code: currentErp.currency })}</p>
           </Col>
         </Row>
       </div>

@@ -1,121 +1,101 @@
-import { Space, Layout, Divider, Typography } from 'antd';
-
+import { Layout, Typography } from 'antd';
+import logo from '@/style/images/logo-text.svg';
 import useLanguage from '@/locale/useLanguage';
-import { useSelector } from 'react-redux';
-import { selectLangDirection } from '@/redux/translate/selectors';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
 
 export default function SideContent() {
   const translate = useLanguage();
-  const langDirection = useSelector(selectLangDirection)
 
   return (
     <Content
       style={{
-        padding: '150px 30px 30px',
+        padding: '80px 40px 40px',
         width: '100%',
-        maxWidth: '400px',
+        maxWidth: '480px',
         margin: '0 auto',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        height: '100%',
       }}
       className="sideContent"
     >
       <div style={{ width: '100%' }}>
+        {/* Logo */}
         <img
-          src="www.google.com"
-          alt="IDURAR ERP CRM"
-          style={{ margin: '0 auto 40px', display: 'block' }}
-          height={63}
-          width={220}
-        />
-        <div className="space40"></div>
-        <Title level={3}>{translate('Manage your company with')} :</Title>
-
-        <div className="space20"></div>
-        <ul className="list-checked" style={{paddingRight:0}}>
-          <li className={`list-checked-item ${langDirection === "rtl" ? "list-checked-item-right" : "list-checked-item-left"}`}>
-            <Space direction="vertical">
-              <Text strong>{translate('All-in-one tool')}</Text>
-
-              <Text>{translate('Run and scale your ERP CRM Apps')}</Text>
-            </Space>
-          </li>
-
-          <li className={`list-checked-item ${langDirection === "rtl" ? "list-checked-item-right" : "list-checked-item-left"}`}>
-            <Space direction="vertical">
-              <Text strong>{translate('Easily add and manage your services')}</Text>
-              <Text>{translate('It brings together your invoice clients and leads')}</Text>
-            </Space>
-          </li>
-        </ul>
-        <Divider />
-        <div
+          src={logo}
+          alt="Coffee With Corporates"
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
+            margin: '0 0 48px',
+            display: 'block',
+            filter: 'brightness(0) invert(1)',
+            opacity: 0.95,
+          }}
+          height={52}
+          width={210}
+        />
+
+        {/* Headline */}
+        <Title
+          level={1}
+          style={{
+            fontSize: '2.2rem',
+            fontWeight: 700,
+            lineHeight: 1.25,
+            marginBottom: '16px',
+            fontFamily: "Georgia, 'Book Antiqua', Palatino, serif",
           }}
         >
-          {/* <img
-            src={logo1}
-            alt="Logo1"
-            style={{
-              margin: '0 15px',
-              display: 'block',
-              float: 'left',
-              width: '48px',
-              filter: 'grayscale(1)',
-              mixBlendMode: 'multiply',
-              opacity: '0.8',
-            }}
-            height={48}
-            width={48}
-          />
-          <img
-            src={logo2}
-            alt="Logo2"
-            style={{
-              margin: '0 15px',
-              display: 'block',
-              float: 'left',
-              width: '48px',
-              filter: 'grayscale(1)',
-              mixBlendMode: 'multiply',
-              opacity: '0.8',
-            }}
-            height={48}
-            width={48}
-          />
-          <img
-            src={logo3}
-            alt="Logo3"
-            style={{
-              margin: '0 15px',
-              display: 'block',
-              float: 'left',
-              width: '48px',
-              filter: 'grayscale(1)',
-              mixBlendMode: 'multiply',
-              opacity: '0.8',
-            }}
-            height={48}
-            width={48}
-          />
-          <img
-            src={logo4}
-            alt="Logo4"
-            style={{
-              margin: '0 15px',
-              display: 'block',
-              float: 'left',
-              width: '48px',
-              filter: 'grayscale(1)',
-              mixBlendMode: 'multiply',
-              opacity: '0.8',
-            }}
-            height={48}
-            width={48}
-          /> */}
+          Your Business,
+          <br />
+          Perfectly Brewed.
+        </Title>
+
+        {/* Subtitle */}
+        <Text
+          style={{
+            fontSize: '15px',
+            lineHeight: '1.7',
+            display: 'block',
+            marginBottom: '40px',
+            opacity: 0.85,
+          }}
+        >
+          Manage clients, invoices, leads and payments — all in one place.
+        </Text>
+
+        {/* Feature bullets */}
+        <ul className="list-checked" style={{ marginBottom: 0 }}>
+          {[
+            'Client & Lead management',
+            'Professional invoicing & payments',
+            'Sales pipeline & offers',
+            'Team settings & roles',
+          ].map((feat) => (
+            <li
+              key={feat}
+              className="list-checked-item list-checked-item-left"
+              style={{ paddingLeft: '1.8rem' }}
+            >
+              {feat}
+            </li>
+          ))}
+        </ul>
+
+        {/* Tagline */}
+        <div
+          style={{
+            marginTop: '48px',
+            paddingTop: '24px',
+            borderTop: '1px solid rgba(212, 169, 106, 0.25)',
+            opacity: 0.65,
+            fontSize: '13px',
+            letterSpacing: '0.5px',
+          }}
+        >
+          COFFEE WITH CORPORATES · ERP / CRM PLATFORM
         </div>
       </div>
     </Content>

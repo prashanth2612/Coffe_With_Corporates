@@ -40,6 +40,9 @@ const Product = lazy(() => import('@/pages/Product'));
 
 const People = lazy(() => import('@/pages/People'));
 const Company = lazy(() => import('@/pages/Company'));
+const Employee = lazy(() => import('@/pages/Employee'));
+const Inventory = lazy(() => import('@/pages/Inventory'));
+const Order = lazy(() => import('@/pages/Order'));
 
 const About = lazy(() => import('@/pages/About'));
 
@@ -190,8 +193,20 @@ let routes = {
       element: <Expense />,
     },
     {
-      path: 'category/expenses',
+      path: '/category/expenses',
       element: <ExpenseCategory />,
+    },
+    {
+      path: '/employee',
+      element: <Employee />,
+    },
+    {
+      path: '/inventory',
+      element: <Inventory />,
+    },
+    {
+      path: '/order',
+      element: <Order />,
     },
     {
       path: '*',

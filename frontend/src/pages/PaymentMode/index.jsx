@@ -9,7 +9,7 @@ import PaymentModeForm from '@/forms/PaymentModeForm';
 
 export default function PaymentMode() {
   const translate = useLanguage();
-  const entity = 'paymentMode';
+  const entity = 'paymentmode';
   const searchConfig = {
     displayLabels: ['name'],
     searchFields: 'name',

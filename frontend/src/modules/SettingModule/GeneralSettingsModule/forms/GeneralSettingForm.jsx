@@ -3,6 +3,7 @@ import { Input, Form, Select, Switch } from 'antd';
 import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
 
 import languages from '@/locale/translation/translation';
+import { languagesList } from '@/locale/translation/translation';
 import useLanguage from '@/locale/useLanguage';
 import { translateAction } from '@/redux/translate/actions';
 import { countryList } from '@/utils/countryList';
@@ -37,7 +38,7 @@ const langDirection=useSelector(selectLangDirection)
             dispatch(translateAction.translate(value));
           }}
         >
-          {languages.map((language) => (
+          {languagesList.map((language) => (
             <Select.Option key={language.value} value={language.value} label={language.label}>
               <div className="demo-option-label-item">
                 <span role="img" aria-label={language.label}>

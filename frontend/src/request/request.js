@@ -4,13 +4,13 @@ import { API_BASE_URL } from '@/config/serverApiConfig';
 import errorHandler from './errorHandler';
 import successHandler from './successHandler';
 
-axios.defaults.baseURL = API_BASE_URL;
+
 axios.defaults.withCredentials = true;
 
 const request = {
   create: async ({ entity, jsonData }) => {
     try {
-      const response = await axios.post(entity + '/create', jsonData);
+      const response = await axios.post(API_BASE_URL + entity + '/create', jsonData);
       successHandler(response, {
         notifyOnSuccess: true,
         notifyOnFailed: true,
@@ -22,7 +22,7 @@ const request = {
   },
   createAndUpload: async ({ entity, jsonData }) => {
     try {
-      const response = await axios.post(entity + '/create', jsonData, {
+      const response = await axios.post(API_BASE_URL + entity + '/create', jsonData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -38,7 +38,7 @@ const request = {
   },
   read: async ({ entity, id }) => {
     try {
-      const response = await axios.get(entity + '/read/' + id);
+      const response = await axios.get(API_BASE_URL + entity + '/read/' + id);
       successHandler(response, {
         notifyOnSuccess: false,
         notifyOnFailed: true,
@@ -50,7 +50,7 @@ const request = {
   },
   update: async ({ entity, id, jsonData }) => {
     try {
-      const response = await axios.patch(entity + '/update/' + id, jsonData);
+      const response = await axios.patch(API_BASE_URL + entity + '/update/' + id, jsonData);
       successHandler(response, {
         notifyOnSuccess: true,
         notifyOnFailed: true,
@@ -62,7 +62,7 @@ const request = {
   },
   updateAndUpload: async ({ entity, id, jsonData }) => {
     try {
-      const response = await axios.patch(entity + '/update/' + id, jsonData, {
+      const response = await axios.patch(API_BASE_URL + entity + '/update/' + id, jsonData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -79,7 +79,7 @@ const request = {
 
   delete: async ({ entity, id }) => {
     try {
-      const response = await axios.delete(entity + '/delete/' + id);
+      const response = await axios.delete(API_BASE_URL + entity + '/delete/' + id);
       successHandler(response, {
         notifyOnSuccess: true,
         notifyOnFailed: true,
@@ -96,7 +96,7 @@ const request = {
       let equal = options.equal ? '&equal=' + options.equal : '';
       let query = `?${filter}${equal}`;
 
-      const response = await axios.get(entity + '/filter' + query);
+      const response = await axios.get(API_BASE_URL + entity + '/filter' + query);
       successHandler(response, {
         notifyOnSuccess: false,
         notifyOnFailed: false,
@@ -115,7 +115,7 @@ const request = {
       }
       query = query.slice(0, -1);
       // headersInstance.cancelToken = source.token;
-      const response = await axios.get(entity + '/search' + query);
+      const response = await axios.get(API_BASE_URL + entity + '/search' + query);
 
       successHandler(response, {
         notifyOnSuccess: false,
@@ -135,7 +135,7 @@ const request = {
       }
       query = query.slice(0, -1);
 
-      const response = await axios.get(entity + '/list' + query);
+      const response = await axios.get(API_BASE_URL + entity + '/list' + query);
 
       successHandler(response, {
         notifyOnSuccess: false,
@@ -154,7 +154,7 @@ const request = {
       }
       query = query.slice(0, -1);
 
-      const response = await axios.get(entity + '/listAll' + query);
+      const response = await axios.get(API_BASE_URL + entity + '/listAll' + query);
 
       successHandler(response, {
         notifyOnSuccess: false,
@@ -168,7 +168,7 @@ const request = {
 
   post: async ({ entity, jsonData }) => {
     try {
-      const response = await axios.post(entity, jsonData);
+      const response = await axios.post(API_BASE_URL + entity, jsonData);
 
       return response.data;
     } catch (error) {
@@ -177,7 +177,7 @@ const request = {
   },
   get: async ({ entity }) => {
     try {
-      const response = await axios.get(entity);
+      const response = await axios.get(API_BASE_URL + entity);
       return response.data;
     } catch (error) {
       return errorHandler(error);
@@ -185,7 +185,7 @@ const request = {
   },
   patch: async ({ entity, jsonData }) => {
     try {
-      const response = await axios.patch(entity, jsonData);
+      const response = await axios.patch(API_BASE_URL + entity, jsonData);
       successHandler(response, {
         notifyOnSuccess: true,
         notifyOnFailed: true,
@@ -198,7 +198,7 @@ const request = {
 
   upload: async ({ entity, id, jsonData }) => {
     try {
-      const response = await axios.patch(entity + '/upload/' + id, jsonData, {
+      const response = await axios.patch(API_BASE_URL + entity + '/upload/' + id, jsonData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -226,7 +226,7 @@ const request = {
         query += key + '=' + options[key] + '&';
       }
       query = query.slice(0, -1);
-      const response = await axios.get(entity + '/summary' + query);
+      const response = await axios.get(API_BASE_URL + entity + '/summary' + query);
 
       successHandler(response, {
         notifyOnSuccess: false,
@@ -241,7 +241,7 @@ const request = {
 
   mail: async ({ entity, jsonData }) => {
     try {
-      const response = await axios.post(entity + '/mail/', jsonData);
+      const response = await axios.post(API_BASE_URL + entity + '/mail/', jsonData);
       successHandler(response, {
         notifyOnSuccess: true,
         notifyOnFailed: true,
@@ -254,7 +254,7 @@ const request = {
 
   convert: async ({ entity, id }) => {
     try {
-      const response = await axios.get(`${entity}/convert/${id}`);
+      const response = await axios.get(`${API_BASE_URL}${entity}/convert/${id}`);
       successHandler(response, {
         notifyOnSuccess: true,
         notifyOnFailed: true,

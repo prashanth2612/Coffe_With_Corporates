@@ -19,9 +19,28 @@ const orderSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: 'Employee',
   },
+
+  // Simple order fields (used by the Order page form)
+  orderId: {
+    type: String,
+    trim: true,
+  },
+  products: {
+    type: String,
+    trim: true,
+  },
+  quantity: {
+    type: Number,
+    default: 1,
+  },
+  price: {
+    type: Number,
+    default: 0,
+  },
+
+  // Advanced ERP fields (optional)
   number: {
     type: Number,
-    required: true,
   },
   recurring: {
     type: String,
@@ -30,17 +49,15 @@ const orderSchema = new mongoose.Schema({
   date: {
     type: Date,
     default: Date.now,
-    required: true,
   },
   client: {
     type: mongoose.Schema.ObjectId,
     ref: 'Client',
-    required: true,
     autopopulate: true,
   },
   invoice: {
     type: mongoose.Schema.ObjectId,
-    ref: 'Ivoince',
+    ref: 'Invoice',
     autopopulate: true,
   },
   items: [
@@ -48,11 +65,9 @@ const orderSchema = new mongoose.Schema({
       product: {
         type: mongoose.Schema.ObjectId,
         ref: 'Product',
-        required: true,
       },
       itemName: {
         type: String,
-        required: true,
       },
       description: {
         type: String,
@@ -60,28 +75,14 @@ const orderSchema = new mongoose.Schema({
       quantity: {
         type: Number,
         default: 1,
-        required: true,
       },
       price: {
         type: Number,
-        required: true,
       },
       discount: {
         type: Number,
         default: 0,
       },
-      // taxRate: {
-      //   type: Number,
-      //   default: 0,
-      // },
-      // subTotal: {
-      //   type: Number,
-      //   default: 0,
-      // },
-      // taxTotal: {
-      //   type: Number,
-      //   default: 0,
-      // },
       total: {
         type: Number,
       },
@@ -118,8 +119,10 @@ const orderSchema = new mongoose.Schema({
       'cancelled',
       'on hold',
       'refunded',
+      'pending',
+      'shipped',
     ],
-    default: 'not started',
+    default: 'pending',
   },
   processingStatus: String,
   pdf: {

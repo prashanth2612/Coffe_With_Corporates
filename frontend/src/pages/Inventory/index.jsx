@@ -1,22 +1,30 @@
 import React from 'react';
 import CrudModule from '@/modules/CrudModule/CrudModule';
-import InventoryForm from '@/forms/InventoryForm'; // Retaining InventoryForm
+import InventoryForm from '@/forms/InventoryForm';
 import useLanguage from '@/locale/useLanguage';
 
 export default function Inventory() {
   const translate = useLanguage();
-  const entity = 'inventory'; // Updated entity name
+  const entity = 'inventory';
   const searchConfig = {
-    displayLabels: ['product'], // Adjusted to search by product
-    searchFields: 'product',
+    displayLabels: ['product'],
+    searchFields: 'product,sku,category',
     outputValue: '_id',
   };
-  const deleteModalLabels = ['product', 'quantity', 'unitPrice']; // Adjusted to display inventory item labels
+  const deleteModalLabels = ['product'];
 
   const readColumns = [
     {
       title: translate('Product'),
       dataIndex: 'product',
+    },
+    {
+      title: translate('SKU'),
+      dataIndex: 'sku',
+    },
+    {
+      title: translate('Category'),
+      dataIndex: 'category',
     },
     {
       title: translate('Quantity'),
@@ -26,28 +34,49 @@ export default function Inventory() {
       title: translate('Unit Price'),
       dataIndex: 'unitPrice',
     },
+    {
+      title: translate('Location'),
+      dataIndex: 'location',
+    },
+    {
+      title: translate('Description'),
+      dataIndex: 'description',
+    },
   ];
 
   const dataTableColumns = [
     {
       title: translate('Product'),
-      dataIndex: ['product'],
+      dataIndex: 'product',
+    },
+    {
+      title: translate('SKU'),
+      dataIndex: 'sku',
     },
     {
       title: translate('Quantity'),
-      dataIndex: ['quantity'],
+      dataIndex: 'quantity',
     },
     {
       title: translate('Unit Price'),
-      dataIndex: ['unitPrice'],
+      dataIndex: 'unitPrice',
+      render: (value) => (value != null ? `$ ${value}` : ''),
+    },
+    {
+      title: translate('Category'),
+      dataIndex: 'category',
+    },
+    {
+      title: translate('Location'),
+      dataIndex: 'location',
     },
   ];
 
   const Labels = {
-    PANEL_TITLE: translate('product'),
-    DATATABLE_TITLE: translate('product_list'),
-    ADD_NEW_ENTITY: translate('add_new_product'),
-    ENTITY_NAME: translate('product'),
+    PANEL_TITLE: translate('inventory'),
+    DATATABLE_TITLE: translate('inventory_list'),
+    ADD_NEW_ENTITY: translate('add_new_inventory'),
+    ENTITY_NAME: translate('inventory'),
   };
 
   const configPage = {
@@ -63,8 +92,8 @@ export default function Inventory() {
   };
   return (
     <CrudModule
-      createForm={<InventoryForm />} // Retaining InventoryForm
-      updateForm={<InventoryForm isUpdateForm={true} />} // Retaining InventoryForm
+      createForm={<InventoryForm />}
+      updateForm={<InventoryForm isUpdateForm={true} />}
       config={config}
     />
   );

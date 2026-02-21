@@ -2,30 +2,28 @@ const mongoose = require('mongoose');
 
 const logout = async (req, res, { userModel }) => {
   const UserPassword = mongoose.model(userModel + 'Password');
-
   const token = req.cookies.token;
-  await UserPassword.findOneAndUpdate(
-    { user: req.admin._id },
-    { $pull: { loggedSessions: token } },
-    {
-      new: true,
-    }
-  ).exec();
+  const userId = req.admin?._id || req[userModel.toLowerCase()]?._id;
 
-  res
+  if (token && userId) {
+    await UserPassword.findOneAndUpdate(
+      { user: userId },
+      { $pull: { loggedSessions: token } },
+      { new: true }
+    ).exec();
+  }
+
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  return res
     .clearCookie('token', {
-      maxAge: null,
-      sameSite: 'none',
       httpOnly: true,
-      secure: true,
+      sameSite: isProduction ? 'None' : 'Lax',
+      secure: isProduction,
       domain: req.hostname,
-      Path: '/',
+      path: '/',
     })
-    .json({
-      success: true,
-      result: {},
-      message: 'Successfully logout',
-    });
+    .json({ success: true, result: {}, message: 'Successfully logged out.' });
 };
 
 module.exports = logout;

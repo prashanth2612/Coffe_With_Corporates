@@ -1,92 +1,83 @@
-import { useDispatch, useSelector } from 'react-redux';
-
-import { Select, Form } from 'antd';
-
-import { currencyOptions } from '@/utils/currencyList';
-
+import { useSelector, useDispatch } from 'react-redux';
+import { Select } from 'antd';
 import { selectMoneyFormat } from '@/redux/settings/selectors';
-
-import { useState, useEffect } from 'react';
-import { request } from '@/request';
-import useFetch from '@/hooks/useFetch';
+import { settingsAction } from '@/redux/settings/actions';
 import { useNavigate } from 'react-router-dom';
-import useLanguage from '@/locale/useLanguage';
 import useResponsive from '@/hooks/useResponsive';
 
+const CURRENCIES = [
+  { code: 'INR', symbol: '₹',  name: 'Indian Rupee' },
+  { code: 'USD', symbol: '$',  name: 'US Dollar' },
+  { code: 'EUR', symbol: '€',  name: 'Euro' },
+  { code: 'GBP', symbol: '£',  name: 'British Pound' },
+  { code: 'AED', symbol: 'د.إ',name: 'UAE Dirham' },
+  { code: 'SGD', symbol: 'S$', name: 'Singapore Dollar' },
+  { code: 'AUD', symbol: 'A$', name: 'Australian Dollar' },
+  { code: 'CAD', symbol: 'C$', name: 'Canadian Dollar' },
+  { code: 'JPY', symbol: '¥',  name: 'Japanese Yen' },
+  { code: 'CHF', symbol: 'Fr', name: 'Swiss Franc' },
+  { code: 'CNY', symbol: '¥',  name: 'Chinese Yuan' },
+  { code: 'SAR', symbol: '﷼', name: 'Saudi Riyal' },
+  { code: 'MYR', symbol: 'RM', name: 'Malaysian Ringgit' },
+  { code: 'BRL', symbol: 'R$', name: 'Brazilian Real' },
+  { code: 'ZAR', symbol: 'R',  name: 'South African Rand' },
+];
+
 export const ChooseCurrency = () => {
-  const dispatch = useDispatch();
-
   const { isMobile } = useResponsive();
-  const [selectOptions, setOptions] = useState([]);
-
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const money = useSelector(selectMoneyFormat);
+  const currentCode = money?.default_currency_code || 'INR';
 
-  const asyncList = () => {
-    return request.listAll({ entity: 'currency', options: { enabled: true } });
-  };
-  const { result, isLoading: fetchIsLoading, isSuccess } = useFetch(asyncList);
-  useEffect(() => {
-    if (isSuccess) {
-      setOptions(result);
+  const options = [
+    ...CURRENCIES.map((c) => ({
+      value: c.code,
+      label: `${c.symbol} ${c.code}`,
+    })),
+    { value: '__settings', label: '⚙ Currency Settings' },
+  ];
+
+  const handleChange = (val) => {
+    if (val === '__settings') {
+      navigate('/settings');
+      return;
     }
-  }, [isSuccess]);
+    const selected = CURRENCIES.find((c) => c.code === val);
+    if (!selected) return;
 
-  const money_format_settings = useSelector(selectMoneyFormat);
+    const updatedMoney = {
+      ...money,
+      default_currency_code: selected.code,
+      currency_symbol: selected.symbol,
+    };
 
-  const handleSelectChange = (newValue) => {
-    if (newValue === 'redirectURL') {
-      navigate('/settings/currency');
-    }
+    // Persist to localStorage so useMoney picks it up after re-render
+    const persisted = JSON.parse(window.localStorage.getItem('settings') || '{}');
+    persisted.money_format_settings = updatedMoney;
+    window.localStorage.setItem('settings', JSON.stringify(persisted));
+
+    // Update Redux store
+    dispatch(settingsAction.updateCurrency({ data: updatedMoney }));
   };
 
-  const optionsList = () => {
-    const list = [];
-
-    const value = 'redirectURL';
-    const label = `+ Add New Currency`;
-
-    list.push(...currencyOptions(selectOptions));
-    list.push({ value, label });
-
-    return list;
-  };
-
-  if (money_format_settings.default_currency_code)
-    return (
-      <Select
-        showSearch
-        defaultValue={money_format_settings.default_currency_code}
-        loading={fetchIsLoading}
-        filterOption={(input, option) =>
-          (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-        }
-        filterSort={(optionA, optionB) =>
-          (optionA?.label ?? '').toLowerCase().startsWith((optionB?.label ?? '').toLowerCase())
-        }
-        options={optionsList()}
-        onChange={handleSelectChange}
-        style={{
-          width: isMobile ? '90px' : '130px',
-          float: 'right',
-          marginTop: '5px',
-          cursor: 'pointer',
-          direction: 'ltr',
-        }}
-      ></Select>
-    );
-  else {
+  return (
     <Select
-      loading={fetchIsLoading}
+      showSearch
+      value={currentCode}
+      filterOption={(input, opt) =>
+        (opt?.label ?? '').toLowerCase().includes(input.toLowerCase())
+      }
+      options={options}
+      onChange={handleChange}
       style={{
-        width: '130px',
+        width: isMobile ? '80px' : '120px',
         float: 'right',
         marginTop: '5px',
-        cursor: 'pointer',
         direction: 'ltr',
       }}
-      defaultValue={'Loading ..'}
-    ></Select>;
-  }
+    />
+  );
 };
 
 export default ChooseCurrency;

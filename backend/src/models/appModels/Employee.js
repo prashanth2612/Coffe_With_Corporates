@@ -11,15 +11,29 @@ const employeeSchema = new mongoose.Schema({
   },
 
   isAdmin: { type: mongoose.Schema.ObjectId, ref: 'Admin' },
+  name: {
+    type: String,
+    trim: true,
+  },
+  surname: {
+    type: String,
+    trim: true,
+  },
   firstname: {
     type: String,
     trim: true,
-    required: true,
   },
   lastname: {
     type: String,
     trim: true,
-    required: true,
+  },
+  department: {
+    type: String,
+    trim: true,
+  },
+  position: {
+    type: String,
+    trim: true,
   },
   birthplace: String,
   gender: String,

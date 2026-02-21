@@ -9,7 +9,7 @@ export default function Employee() {
   const entity = 'employee';
   const searchConfig = {
     displayLabels: ['name', 'surname'],
-    searchFields: 'name,surname,birthday',
+    searchFields: 'name,surname,department,position',
     outputValue: '_id',
   };
 

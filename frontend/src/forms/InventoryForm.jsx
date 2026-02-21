@@ -1,17 +1,19 @@
 import React from 'react';
 import { Form, Input, InputNumber } from 'antd';
+import useLanguage from '@/locale/useLanguage';
 
 export default function InventoryForm() {
-  // Renamed to InventoryForm for clarity
+  const translate = useLanguage();
+
   return (
     <>
       <Form.Item
-        label="Product"
+        label={translate('Product')}
         name="product"
         rules={[
           {
             required: true,
-            message: 'Please input Product name!',
+            message: 'Please input the product name!',
           },
         ]}
       >
@@ -19,36 +21,72 @@ export default function InventoryForm() {
       </Form.Item>
 
       <Form.Item
-        label="Quantity"
+        label={translate('SKU')}
+        name="sku"
+      >
+        <Input placeholder="e.g. SKU-001" />
+      </Form.Item>
+
+      <Form.Item
+        label={translate('Category')}
+        name="category"
+      >
+        <Input />
+      </Form.Item>
+
+      <Form.Item
+        label={translate('Quantity')}
         name="quantity"
         rules={[
           {
             required: true,
-            message: 'Please input Quantity!',
-            type: 'number',
-            min: 0, // Ensure non-negative numbers
+            message: 'Please input the quantity!',
           },
         ]}
+        initialValue={0}
       >
-        <InputNumber />
+        <InputNumber min={0} style={{ width: '100%' }} />
       </Form.Item>
 
       <Form.Item
-        label="Unit Price"
+        label={translate('Unit Price')}
         name="unitPrice"
         rules={[
           {
             required: true,
-            message: 'Please input Unit Price!',
-            type: 'number',
-            min: 0, // Ensure non-negative numbers
+            message: 'Please input the unit price!',
           },
         ]}
+        initialValue={0}
       >
         <InputNumber
-          formatter={(value) => `$ ${value}`} // Optional: format value as currency
-          parser={(value) => value.replace(/\$\s?|(,*)/g, '')} // Optional: parse input as number
+          min={0}
+          precision={2}
+          style={{ width: '100%' }}
+          formatter={(value) => `$ ${value}`}
+          parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
         />
+      </Form.Item>
+
+      <Form.Item
+        label={translate('Location')}
+        name="location"
+      >
+        <Input placeholder="e.g. Warehouse A, Shelf 3" />
+      </Form.Item>
+
+      <Form.Item
+        label={translate('Description')}
+        name="description"
+      >
+        <Input.TextArea rows={3} />
+      </Form.Item>
+
+      <Form.Item
+        label={translate('notes')}
+        name="notes"
+      >
+        <Input.TextArea rows={2} />
       </Form.Item>
     </>
   );

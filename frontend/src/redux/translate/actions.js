@@ -2,6 +2,8 @@ import * as actionTypes from './types';
 
 import translation from '@/locale/translation/translation';
 
+const RTL_LANGUAGES = ['ar_ar', 'ar_dz', 'ar_eg', 'ar_jo', 'ar_ma', 'he', 'fa', 'ur'];
+
 export const translateAction = {
   resetState: () => (dispatch) => {
     dispatch({
@@ -15,15 +17,18 @@ export const translateAction = {
         type: actionTypes.REQUEST_LOADING,
       });
 
-      let data = translation.en_us;
+      const langKey = translation[value] ? value : 'en_us';
+      let data = translation[langKey];
+      const isRtl = RTL_LANGUAGES.includes(value.toLowerCase());
+
       if (data) {
         const LANG_STATE = {
           result: data,
           isRtl: isRtl,
-          langDirection: 'ltr',
+          langDirection: isRtl ? 'rtl' : 'ltr',
           langCode: value,
           isLoading: false,
-          isSuccess: false,
+          isSuccess: true,
         };
         window.localStorage.setItem('translate', JSON.stringify(LANG_STATE));
         dispatch({

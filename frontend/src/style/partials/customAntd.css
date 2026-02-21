@@ -116,3 +116,64 @@ h6 {
     animation: App-logo-spin infinite 20s linear;
   }
 }
+
+/* ── Coffee With Corporates Brand Theme ── */
+
+/* Primary buttons */
+.ant-btn-primary {
+  background: #6F4E37 !important;
+  border-color: #6F4E37 !important;
+}
+.ant-btn-primary:hover,
+.ant-btn-primary:focus {
+  background: #8B6347 !important;
+  border-color: #8B6347 !important;
+}
+
+/* Links */
+a {
+  color: #6F4E37;
+}
+a:hover {
+  color: #8B6347;
+}
+
+/* Table selected rows */
+.ant-table-tbody > tr.ant-table-row-selected > td {
+  background: rgba(111, 78, 55, 0.06) !important;
+}
+
+/* Tags */
+.ant-tag-blue {
+  background: rgba(111, 78, 55, 0.1) !important;
+  border-color: rgba(111, 78, 55, 0.3) !important;
+  color: #6F4E37 !important;
+}
+
+/* Pagination active */
+.ant-pagination-item-active {
+  border-color: #6F4E37 !important;
+}
+.ant-pagination-item-active a {
+  color: #6F4E37 !important;
+}
+
+/* Sidebar dark menu override for Ant Design 5 */
+.ant-layout-sider {
+  background: #2C1810 !important;
+}
+
+.ant-menu-dark,
+.ant-menu-dark > .ant-menu {
+  background: transparent !important;
+}
+
+.ant-menu-dark .ant-menu-item-selected {
+  background: rgba(212, 169, 106, 0.2) !important;
+}
+
+.ant-layout-sider-trigger {
+  background: #3A2010 !important;
+  color: #C9A87C !important;
+  border-top: 1px solid rgba(212, 169, 106, 0.15) !important;
+}

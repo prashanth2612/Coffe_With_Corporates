@@ -10,9 +10,11 @@ const LANG_INITIAL_STATE = {
   isSuccess: false,
 };
 
-const INITIAL_STATE = storePersist.get('translate')
-  ? storePersist.get('translate')
-  : LANG_INITIAL_STATE;
+const persistedState = storePersist.get('translate');
+const INITIAL_STATE =
+  persistedState && persistedState.result && typeof persistedState.result === 'object'
+    ? persistedState
+    : LANG_INITIAL_STATE;
 
 const translateReducer = (state = INITIAL_STATE, action) => {
   const { payload = null, langCode, isRtl = false } = action;

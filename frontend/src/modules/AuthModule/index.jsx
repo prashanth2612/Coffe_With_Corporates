@@ -1,11 +1,8 @@
 import useLanguage from '@/locale/useLanguage';
-
 import { Layout, Col, Divider, Typography } from 'antd';
-
 import AuthLayout from '@/layout/AuthLayout';
 import SideContent from './SideContent';
-
-
+import logo from '@/style/images/logo-text.svg';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -23,8 +20,8 @@ const AuthModule = ({ authContent, AUTH_TITLE, isForRegistre = false }) => {
       >
         <Col xs={{ span: 24 }} sm={{ span: 24 }} md={{ span: 0 }} span={0}>
           <img
-            src="www.google.com"
-            alt="Logo"
+            src={logo}
+            alt="Coffee With Corporates"
             style={{
               margin: '0px auto 20px',
               display: 'block',
@@ -35,7 +32,6 @@ const AuthModule = ({ authContent, AUTH_TITLE, isForRegistre = false }) => {
           <div className="space10" />
         </Col>
         <Title level={1}>{translate(AUTH_TITLE)}</Title>
-
         <Divider />
         <div className="site-layout-content">{authContent}</div>
       </Content>
