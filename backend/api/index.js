@@ -1,9 +1,14 @@
-require('module-alias/register');
-require('dotenv').config({ path: '.env' });
+const path = require('path');
+const moduleAlias = require('module-alias');
+
+// Fix alias path for Vercel's serverless environment
+moduleAlias.addAlias('@', path.join(__dirname, '../src'));
+
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
+require('dotenv').config({ path: path.join(__dirname, '../.env.local') });
 
 const mongoose = require('mongoose');
 const { globSync } = require('glob');
-const path = require('path');
 
 // Connect to MongoDB
 if (mongoose.connection.readyState === 0) {
@@ -13,11 +18,11 @@ if (mongoose.connection.readyState === 0) {
 }
 
 // Load models
-const modelFiles = globSync('./src/models/**/*.js');
+const modelFiles = globSync(path.join(__dirname, '../src/models/**/*.js'));
 for (const filePath of modelFiles) {
   require(path.resolve(filePath));
 }
 
 const app = require('../src/app');
 
-module.exports = app; // ✅ Vercel needs this instead of app.listen()
+module.exports = app;
