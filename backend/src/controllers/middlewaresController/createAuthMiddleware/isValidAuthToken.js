@@ -1,36 +1,50 @@
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const mongoose = require('mongoose');
 
-const isValidAuthToken = async (req, res, next, { userModel, jwtSecret = 'JWT_SECRET' }) => {
-  try {
-    const UserPassword = mongoose.model(userModel + 'Password');
-    const User = mongoose.model(userModel);
-    const token = req.cookies.token;
-
-    if (!token)
-      return res.status(401).json({ success: false, result: null, message: 'No authentication token. Authorization denied.', jwtExpired: true });
-
-    const verified = jwt.verify(token, process.env[jwtSecret]);
-
-    const [user, userPassword] = await Promise.all([
-      User.findOne({ _id: verified.id, removed: false }),
-      UserPassword.findOne({ user: verified.id, removed: false }),
-    ]);
-
-    if (!user)
-      return res.status(401).json({ success: false, result: null, message: "User doesn't exist. Authorization denied.", jwtExpired: true });
-
-    if (!userPassword || !userPassword.loggedSessions.includes(token))
-      return res.status(401).json({ success: false, result: null, message: 'Session expired. Please log in again.', jwtExpired: true });
-
-    req[userModel.toLowerCase()] = user;
-    return next();
-  } catch (error) {
-    if (error.name === 'TokenExpiredError' || error.name === 'JsonWebTokenError') {
-      return res.status(401).json({ success: false, result: null, message: 'Token expired or invalid. Please log in again.', jwtExpired: true });
-    }
-    return res.status(503).json({ success: false, result: null, message: 'Authentication service unavailable.', controller: 'isValidAuthToken' });
+const authUser = async (req, res, { user, databasePassword, password, UserPasswordModel }) => {
+  if (!databasePassword) {
+    return res.status(404).json({ success: false, result: null, message: 'User credentials not found.' });
   }
+
+  const isMatch = await bcrypt.compare(databasePassword.salt + password, databasePassword.password);
+  if (!isMatch) {
+    return res.status(403).json({ success: false, result: null, message: 'Invalid credentials.' });
+  }
+
+  const rememberMe = Boolean(req.body.remember);
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: rememberMe ? '365d' : '24h',
+  });
+
+  await UserPasswordModel.findOneAndUpdate(
+    { user: user._id },
+    { $push: { loggedSessions: token } },
+    { new: true }
+  ).exec();
+
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  return res
+    .status(200)
+    .cookie('token', token, {
+      httpOnly: true,
+      sameSite: isProduction ? 'None' : 'Lax',
+      secure: isProduction,
+      path: '/',
+      ...(rememberMe && { maxAge: 365 * 24 * 60 * 60 * 1000 }),
+    })
+    .json({
+      success: true,
+      result: {
+        _id: user._id,
+        name: user.name,
+        surname: user.surname,
+        role: user.role,
+        email: user.email,
+        photo: user.photo,
+      },
+      message: 'Successfully logged in.',
+    });
 };
 
-module.exports = isValidAuthToken;
+module.exports = authUser;
