@@ -1,11 +1,9 @@
 import path from 'path';
-
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default ({ mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
-
   const proxy_url =
     process.env.VITE_DEV_REMOTE === 'remote'
       ? process.env.VITE_BACKEND_SERVER
@@ -17,6 +15,13 @@ export default ({ mode }) => {
       base: '/',
       alias: {
         '@': path.resolve(__dirname, 'src'),
+      },
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: undefined,
+        },
       },
     },
     server: {
@@ -35,5 +40,6 @@ export default ({ mode }) => {
       },
     },
   };
+
   return defineConfig(config);
 };
