@@ -33,6 +33,7 @@ app.use(
       if (
         origin.startsWith('http://localhost:') ||
         origin.startsWith('http://127.0.0.1:') ||
+        origin.includes('coffe-with-corporates') || // ✅ allows all Vercel preview URLs
         allowedOrigins.includes(origin)
       ) {
         return callback(null, true);
