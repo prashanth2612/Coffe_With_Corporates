@@ -14,6 +14,9 @@ const erpApiRouter = require('./routes/appRoutes/appApi');
 
 const app = express();
 
+const moduleAlias = require('module-alias');
+moduleAlias.addAlias('@', path.join(__dirname, '.'));
+
 // CORS
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',')
