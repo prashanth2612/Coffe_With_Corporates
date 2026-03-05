@@ -2,17 +2,21 @@ const { basename, extname } = require('path');
 const path = require('path');
 const { globSync } = require('glob');
 
-// ✅ Use absolute path so it works on Vercel too
-const modelsDir = path.join(__dirname, '../');
-const appModelsFiles = globSync(path.join(modelsDir, 'appModels/**/*.js'));
-const modelsFiles = globSync(path.join(modelsDir, '**/*.js')).map((filePath) => {
-  const fileNameWithExtension = basename(filePath);
-  const fileNameWithoutExtension = fileNameWithExtension.replace(
-    extname(fileNameWithExtension),
-    ''
-  );
-  return fileNameWithoutExtension;
-});
+// __dirname = backend/src/models/utils/
+// go up 3 levels to reach backend/
+const cwd = path.join(__dirname, '../../../');
+
+const appModelsFiles = globSync('src/models/appModels/**/*.js', { cwd });
+const modelsFiles = globSync('src/models/**/*.js', { cwd })
+  .filter(f => !f.includes('utils'))
+  .map((filePath) => {
+    const fileNameWithExtension = basename(filePath);
+    const fileNameWithoutExtension = fileNameWithExtension.replace(
+      extname(fileNameWithExtension),
+      ''
+    );
+    return fileNameWithoutExtension;
+  });
 
 const constrollersList = [];
 const appModelsList = [];
@@ -36,12 +40,7 @@ for (const filePath of appModelsFiles) {
   constrollersList.push(controllerName);
   appModelsList.push(modelName);
   entityList.push(entity);
-  const route = {
-    entity: entity,
-    modelName: modelName,
-    controllerName: controllerName,
-  };
-  routesList.push(route);
+  routesList.push({ entity, modelName, controllerName });
 }
 
 module.exports = { constrollersList, appModelsList, modelsFiles, entityList, routesList };
