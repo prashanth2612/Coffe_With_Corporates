@@ -1,3 +1,8 @@
+// ✅ These 3 lines MUST be first before anything else
+const path = require('path');
+const moduleAlias = require('module-alias');
+moduleAlias.addAlias('@', path.join(__dirname, '.'));
+
 const express = require('express');
 const cors = require('cors');
 const compression = require('compression');
@@ -13,9 +18,6 @@ const errorHandlers = require('./handlers/errorHandlers');
 const erpApiRouter = require('./routes/appRoutes/appApi');
 
 const app = express();
-
-const moduleAlias = require('module-alias');
-moduleAlias.addAlias('@', path.join(__dirname, '.'));
 
 // CORS
 const allowedOrigins = process.env.ALLOWED_ORIGINS

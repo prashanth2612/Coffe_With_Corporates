@@ -1,11 +1,11 @@
 const { basename, extname } = require('path');
+const path = require('path');
 const { globSync } = require('glob');
 
-const appModelsFiles = globSync('./src/models/appModels/**/*.js');
-
-const pattern = './src/models/**/*.js';
-
-const modelsFiles = globSync(pattern).map((filePath) => {
+// ✅ Use absolute path so it works on Vercel too
+const modelsDir = path.join(__dirname, '../');
+const appModelsFiles = globSync(path.join(modelsDir, 'appModels/**/*.js'));
+const modelsFiles = globSync(path.join(modelsDir, '**/*.js')).map((filePath) => {
   const fileNameWithExtension = basename(filePath);
   const fileNameWithoutExtension = fileNameWithExtension.replace(
     extname(fileNameWithExtension),
@@ -32,12 +32,10 @@ for (const filePath of appModelsFiles) {
     firstChar.toLowerCase()
   );
   const entity = fileNameWithoutExtension.toLowerCase();
-
   const controllerName = fileNameLowerCaseFirstChar + 'Controller';
   constrollersList.push(controllerName);
   appModelsList.push(modelName);
   entityList.push(entity);
-
   const route = {
     entity: entity,
     modelName: modelName,
